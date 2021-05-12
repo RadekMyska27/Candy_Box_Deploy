@@ -1,19 +1,41 @@
 const candyType = { cracker: "cracker", drinks: "drinks", other: "other" };
 
-const button = document.getElementById("post_btn");
 const shoppingList = document.getElementById("shopping_list");
+const depositQr = document.getElementById("add_deposit_qr");
 const paymentButtonMobile = document.getElementById("payment_btn_mobile");
 const paymentDone = document.getElementById("pay_done");
 const clearShopping = document.getElementById("clear_shopping");
-const image = document.getElementById("QrImg");
+const payQrImage = document.getElementById("QrImg");
+const depositImage = document.getElementById("deposit_qr_img");
+const depositValue = document.getElementById("deposit_value");
+const userAccountButton = document.getElementById("user_account");
+const userSelectButton = document.getElementById("user_select");
+const userAccountBalance = document.getElementById("user_balance");
+const userNameAccount = document.getElementById("user_name_account");
+const userAccountClose = document.getElementById("user_account_close");
+const signOutButton = document.getElementById("sign_out");
+const depositButton = document.getElementById("add_deposit");
+const userPayButton = document.getElementById("user_pay");
+const payQrButton = document.getElementById("add_pay_qr");
+const modalItems = document.getElementById("modal_items");
+const modalPrice = document.getElementById("modal_price");
+const userAccountPayBalance = document.getElementById("user_pay_balance");
 
-var candyList = [];
-var candiesToBuy = [];
+let candyList = [];
+let candiesToBuy = [];
+let users = [];
+let userName;
+let userBalance;
 
-intPriceList();
+initPriceList().then((r) => console.log("Price list incited"));
 
-async function intPriceList() {
-  var url = "http://localhost:3000/api/priceList";
+async function initPriceList() {
+  priceListLoad();
+  usersLoad();
+}
+
+function priceListLoad() {
+  const url = "http://localhost:3000/api/priceList";
   fetch(url, {
     method: "POST",
     headers: new Headers({
@@ -24,8 +46,8 @@ async function intPriceList() {
     .then((responseData) => {
       //  price list items init !!!!!!!!
       candyList = responseData;
-
       candyList.forEach((i) => addElement(i.name, i.price, i.id, i.type));
+      users.forEach((i) => addUserToDropDown(i.id, i.name));
       setAddCandyListener();
       setDeleteCandyListener();
       candiesListToConsole();
@@ -36,203 +58,221 @@ async function intPriceList() {
     });
 }
 
-function addElement(name, price, id, type) {
-  // create a new div element
-  const containerDiv = document.createElement("div");
-  const rowDiv = document.createElement("div");
-  const colDiv = document.createElement("div");
-  const cardDiv = document.createElement("div");
-  const cardImageDiv = document.createElement("div");
-  const cardContentDiv = document.createElement("div");
-  const cardImage = document.createElement("img");
-  const cardTitleSpan = document.createElement("div");
-  const cardActionDiv = document.createElement("div");
-  const action = document.createElement("a");
-  const cardAddButton = document.createElement("a");
-  const cardDeleteButton = document.createElement("a");
-
-  // add tags to elements
-  containerDiv.className = "container";
-  rowDiv.className = "row";
-  colDiv.className = "col s4";
-  cardDiv.className = "card";
-  cardTitleSpan.className = "card-title center";
-
-  cardImageDiv.className = "card-image responsive-img";
-  cardImageDiv.id = "candyImage_" + id.toString();
-  cardImage.src = "image/" + name.toString() + ".jpg";
-  cardActionDiv.className = "card-action";
-
-  cardContentDiv.id = "content" + id.toString();
-  cardContentDiv.className = "card-content center";
-
-  cardAddButton.id = "add_" + id.toString();
-  cardAddButton.className =
-    "waves-effect waves-light btn-small light-green darken-4";
-  cardAddButton.innerText = "Přidat";
-
-  cardDeleteButton.id = "delete_" + id.toString();
-  cardDeleteButton.className = "waves-effect waves-light btn-small brown";
-  cardDeleteButton.innerText = "Odebrat";
-
-  // and give it some content
-  const ContentName = document.createTextNode(name + " ");
-  const ContentPrice = document.createTextNode(price.toString() + ",-");
-  const ContentText = document.createTextNode("V KOŠIKU: 0 ks");
-
-  // add the text node to the newly created div
-  cardTitleSpan.appendChild(ContentName);
-  cardTitleSpan.appendChild(ContentPrice);
-  cardContentDiv.appendChild(ContentText);
-
-  // zanořeni od vnitřnich elementu
-  cardImageDiv.append(cardImage);
-  cardActionDiv.append(cardAddButton);
-  cardActionDiv.append(cardDeleteButton);
-  cardDiv.append(cardImageDiv);
-  cardDiv.append(cardTitleSpan);
-  cardDiv.append(cardContentDiv);
-  cardDiv.append(cardActionDiv);
-  colDiv.append(cardDiv);
-  rowDiv.append(colDiv);
-
-  // add the newly created element and its content into the DOM
-  // const gridRowDiv = document.getElementById("");
-
-  switch (type) {
-    case candyType.cracker:
-      const rowTabCracker = document.getElementById("rowTab_cracker");
-      rowTabCracker.append(colDiv);
-      break;
-
-    case candyType.drinks:
-      const rowTabDrinks = document.getElementById("rowTab_drinks");
-      rowTabDrinks.append(colDiv);
-      break;
-
-    case candyType.other:
-      const rowTabOther = document.getElementById("rowTab_other");
-      rowTabOther.append(colDiv);
-      break;
-
-    default:
-      console.log("ERROR no candy type loaded");
-      break;
-  }
+function usersLoad() {
+  const url = "http://localhost:3000/api/users";
+  fetch(url, {
+    method: "GET",
+    headers: new Headers({
+      "content-type": "application/json",
+    }),
+  })
+    .then((response) => response.json())
+    .then((responseData) => {
+      users = responseData;
+      users.forEach((i) => addUserToDropDown(i.id, i.name));
+      setUserSelectorListener();
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
 }
 
-shoppingList.addEventListener("click", function () {
-  modalElementsSetup();
-});
-
-paymentButtonMobile.addEventListener("click", function () {
-  modalElementsSetup();
-});
-
-paymentDone.addEventListener("click", function () {
-  cleareSchoppingList();
-  image.src = "";
-});
-
-clearShopping.addEventListener("click", function () {
-  cleareSchoppingList();
-});
-
-// modal elements setup - not modul init!!
-function modalElementsSetup() {
-  getQrImageApi();
-
-  var modalItems = document.getElementById("modal_items");
-  modalItems.innerHTML = "Vybrané položky: " + getCandiesNamesToPay();
-
-  var modalPrice = document.getElementById("modal_price");
-  modalPrice.innerHTML =
-    "Celkova cena za vybrané položky " + getPriceToPay() + ",-";
-}
-
-function stopLoader() {
-  console.log("stop");
-  document.getElementById("QrCodeLoader").style.display = "none";
-}
-
-function getQrImageApi() {
-  var url = "http://localhost:3000/api/nodeJsQR";
-
+function userBalanceLoad() {
+  const url = "http://localhost:3000/api/clientBalanceQuery";
   fetch(url, {
     method: "POST",
     headers: new Headers({
       "content-type": "application/json",
     }),
     body: JSON.stringify({
-      price: getPriceToPay(),
-      message: getCandiesNamesToPay(),
+      userName: userName,
     }),
   })
-    .then(async function (response) {
-      var result = await response.json();
-      if (getPriceToPay() !== 0) {
-        image.src = result.img;
-        stopLoader();
+    .then(async (responseBalance) => {
+      userBalance = await responseBalance.json();
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+}
+
+function saveDeposit() {
+  const url = "http://localhost:3000/api/depositRequest";
+  fetch(url, {
+    method: "POST",
+    headers: new Headers({
+      "content-type": "application/json",
+    }),
+    body: JSON.stringify({
+      userName: userName,
+      deposit: depositValue.value,
+    }),
+  })
+    .then(async (responseDeposit) => {
+      let response = await responseDeposit.json();
+
+      if (typeof response === "number") {
+        userBalance = response;
+        updateUserBalance("deposit");
+        deleteDepositValue();
+      } else {
+        console.log(response);
       }
     })
     .catch(function (error) {
       console.log(error);
-      stopLoader();
     });
 }
 
-function setCandyImageEffectOnClick() {
-  for (let i = 0; i < candyList.length; i++) {
-    const candyImage = document.getElementById("candyImage_" + i.toString());
+function savePayment() {
+  const url = "http://localhost:3000/api/paymentRequest";
+  fetch(url, {
+    method: "POST",
+    headers: new Headers({
+      "content-type": "application/json",
+    }),
+    body: JSON.stringify({
+      userName: userName,
+      candies: candiesToBuy,
+    }),
+  })
+    .then(async (responsePayment) => {
+      let response = await responsePayment.json();
 
-    candyImage.addEventListener("click", function () {
-      candyImage.style.opacity = "0.3";
-      setTimeout(() => {
-        candyImage.style.opacity = "1";
-      }, 200);
-    });
-  }
-}
-
-function setAddCandyListener() {
-  for (let i = 0; i < candyList.length; i++) {
-    const addButton = document.getElementById("add_" + i.toString());
-    const candyImage = document.getElementById("candyImage_" + i.toString());
-
-    addItemListener(addButton, i);
-    addItemListener(candyImage, i);
-  }
-}
-
-function addItemListener(addElement, i) {
-  addElement.addEventListener("click", function () {
-    candyList.forEach((candy) => {
-      if (candy.id === i) {
-        candiesToBuy.push(candy);
-        setShoppingListPrice();
-        setNumberOfCandies(i);
+      if (typeof response === "number") {
+        userBalance = response;
+        updateUserBalance("pay");
+      } else {
+        console.log(response);
       }
+    })
+    .catch(function (error) {
+      console.log(error);
     });
+}
+
+shoppingList?.addEventListener("click", function () {
+  if (userName !== "" && userName !== undefined && getPriceToPay() !== 0) {
+    setupPaymentElements();
+  } else if (getPriceToPay() > 0) {
+    payQrButton.style.visibility = "visible";
+  }
+  if (userName !== undefined && userName !== "") {
+    userBalanceLoad();
+  }
+  modalPaySetup();
+});
+
+userAccountButton?.addEventListener("click", function () {
+  if (userName !== undefined) {
+    userBalanceLoad();
+  }
+  modalUserAccountSetup();
+});
+
+paymentButtonMobile?.addEventListener("click", function () {
+  modalPaySetup();
+});
+
+userPayButton?.addEventListener("click", function () {
+  savePayment();
+  clearPayElements();
+});
+
+paymentDone?.addEventListener("click", function () {
+  clearShoppingList();
+  payQrImage.src = "";
+});
+
+clearShopping?.addEventListener("click", function () {
+  clearShoppingList();
+});
+
+depositQr?.addEventListener("click", function () {
+  getDepositQrImageApi();
+});
+
+payQrButton?.addEventListener("click", function () {
+  getQrImageApi();
+});
+
+signOutButton?.addEventListener("click", function () {
+  clearSignOutElements();
+});
+
+depositButton?.addEventListener("click", function () {
+  saveDeposit();
+});
+
+userAccountClose?.addEventListener("click", function () {
+  clearDepositElementsWhenClose();
+});
+
+function setCandiesToBuy(candies) {
+  candiesToBuy = candies;
+}
+
+function addCandieToBuy({ id, name, price, type }) {
+  candiesToBuy.push({
+    id: id,
+    name: name,
+    price: price,
+    type: type,
   });
 }
 
-function setDeleteCandyListener() {
-  for (let i = 0; i < candyList.length; i++) {
-    var deleteButton = document.getElementById("delete_" + i.toString());
+function getCandyList() {
+  return candyList;
+}
 
-    deleteButton.addEventListener("click", function () {
-      var candyIndex = candiesToBuy.findIndex((candy) => candy.id === i);
-      if (candyIndex !== -1) {
-        candiesToBuy.splice(candyIndex, 1);
-        setShoppingListPrice();
-        setNumberOfCandies(i);
-      }
-    });
+function getCandiesToBuy() {
+  return candiesToBuy;
+}
+
+function setupPaymentElements() {
+  userPayButton.removeAttribute("disabled");
+  payQrButton.removeAttribute("disabled");
+  userPayButton.style.visibility = "visible";
+  payQrButton.style.visibility = "visible";
+  userAccountPayBalance.style.visibility = "visible";
+}
+
+function clearPayElements() {
+  userPayButton.setAttribute("disabled", "disabled");
+  payQrButton.setAttribute("disabled", "disabled");
+  payQrImage.src = "";
+}
+
+function stopLoader() {
+  document.getElementById("QrCodeLoader");
+  {
+    if (document.getElementById("QrCodeLoader") !== null) {
+      document.getElementById("QrCodeLoader").style.display = "none";
+    }
   }
 }
 
+function startBalanceLoader() {
+  if (document.getElementById("loader_progress") !== null) {
+    document.getElementById("loader_progress").style.display;
+  }
+}
+
+function stopBalanceLoader() {
+  if (document.getElementById("loader_progress") !== null) {
+    document.getElementById("loader_progress").style.display = "none";
+  }
+}
+
+function clearSignOutElements() {
+  userBalance = undefined;
+  userName = "";
+  userSelectButton.innerHTML = "Uživatel";
+  userAccountButton.style.visibility = "hidden";
+}
+
 function setNumberOfCandies(id) {
-  var candiesNumber = 0;
+  let candiesNumber = 0;
 
   candiesToBuy.forEach((candy) => {
     if (candy.id === id) {
@@ -240,27 +280,37 @@ function setNumberOfCandies(id) {
     }
   });
 
-  var cardContent = document.getElementById("content" + id);
-  cardContent.innerHTML = "V KOŠIKU: " + candiesNumber + " ks";
+  if (document.getElementById("content" + id) !== null) {
+    let cardContent = document.getElementById("content" + id);
+    if (cardContent !== null) {
+      cardContent.innerHTML = "V KOŠIKU: " + candiesNumber + " ks";
+    }
+  }
+
+  return candiesNumber;
 }
 
 function setShoppingListPrice() {
-  shoppingList.innerHTML = "KOŠÍK" + "(" + getPriceToPay().toString() + ",-)";
+  if (shoppingList !== null) {
+    shoppingList.innerHTML = "KOŠÍK" + "(" + getPriceToPay().toString() + ",-)";
+  }
 }
 
 function getPriceToPay() {
-  var price = 0;
+  let price = 0;
   candiesToBuy.forEach((candy) => {
     price += candy.price;
   });
+
   return price;
 }
 
 function getCandiesNamesToPay() {
-  var items = [];
+  let items = [];
   candiesToBuy.forEach((candy) => {
-    items.push(candy.name);
+    items.push(candy.name.replace("_", " "));
   });
+
   return items.join(", ");
 }
 
@@ -272,29 +322,130 @@ function candiesListToConsole() {
   });
 }
 
-function cleareSchoppingList() {
+function setSelectedCandiesToDisplay() {
+  if (modalItems !== null) {
+    modalItems.innerHTML = "Vybrané položky: " + getCandiesNamesToPay();
+  }
+}
+
+function setCandiesPriceToDisplay() {
+  if (modalPrice !== null) {
+    modalPrice.innerHTML =
+      "Celkova cena za vybrané položky " + getPriceToPay() + ",-";
+  }
+}
+
+function clearShoppingList() {
   candiesToBuy = [];
   setShoppingListPrice();
   candyList.forEach((candy) => {
     setNumberOfCandies(candy.id);
   });
+  setSelectedCandiesToDisplay();
+  setCandiesPriceToDisplay();
+
+  userPayButton.style.visibility = "hidden";
+  payQrButton.style.visibility = "hidden";
+  userAccountPayBalance.style.visibility = "hidden";
 }
 
-// MODAL INIT
-document.addEventListener("DOMContentLoaded", function () {
-  var elems = document.querySelectorAll(".modal");
-  var options = { dismissible: false };
-  var instances = M.Modal.init(elems, options);
-});
+// modal elements setup - not modul init!!
+function modalPaySetup() {
+  if (userBalance === undefined) {
+    let timer = setInterval(() => {
+      if (userBalance !== undefined) {
+        setPayUserBalance();
+      }
+    }, 1000); // TODO to constant
+    setTimeout(() => {
+      clearInterval(timer);
+    }, 10000); // TODO to constant
+  } else {
+    setPayUserBalance();
+  }
 
-//NAVBAR INIT
-document.addEventListener("DOMContentLoaded", function () {
-  var elems = document.querySelectorAll(".sidenav");
-  var instances = M.Sidenav.init(elems);
-});
+  if (getPriceToPay() === 0) {
+    stopLoader();
+    return;
+  }
 
-// Collapsibles INIT
-document.addEventListener("DOMContentLoaded", function () {
-  var elems = document.querySelectorAll(".collapsible");
-  var instances = M.Collapsible.init(elems);
-});
+  setSelectedCandiesToDisplay();
+  setCandiesPriceToDisplay();
+}
+
+function setDepositUserBalance() {
+  userAccountBalance.innerHTML = "Zustatek: " + userBalance + ",-";
+}
+
+function setPayUserBalance() {
+  userAccountPayBalance.innerHTML = "Zustatek: " + userBalance + ",-";
+}
+
+function updateUserBalance(targetModal) {
+  //TODO refactoring to solid
+  switch (targetModal) {
+    case "deposit":
+      updateDepositUserBalance();
+      break;
+    case "pay":
+      updatePayUserBalance();
+      break;
+  }
+}
+
+function updateDepositUserBalance() {
+  userAccountBalance.style.color = "green";
+  userAccountBalance.style.fontWeight = "bold";
+  userAccountBalance.innerHTML =
+    "Zustatek: + " + depositValue.value + " = " + userBalance + ",-";
+  setTimeout(function () {
+    userAccountBalance.style.color = "black";
+    userAccountBalance.style.fontWeight = "normal";
+    setDepositUserBalance();
+  }, 3000);
+}
+
+function updatePayUserBalance() {
+  userAccountPayBalance.style.color = "green";
+  userAccountPayBalance.style.fontWeight = "bold";
+  userAccountPayBalance.innerHTML =
+    "Zustatek: - " + getPriceToPay() + " = " + userBalance + ",-";
+  setTimeout(function () {
+    userAccountPayBalance.style.color = "black";
+    userAccountPayBalance.style.fontWeight = "normal";
+    setPayUserBalance();
+  }, 3000);
+}
+
+function deleteDepositValue() {
+  depositValue.value = undefined;
+}
+
+function modalUserAccountSetup() {
+  userNameAccount.innerHTML = "Uživatel: " + capitalizeFirstLetter(userName);
+
+  if (userBalance === undefined) {
+    startBalanceLoader();
+    let timerId = setInterval(() => {
+      if (userBalance !== undefined) {
+        stopBalanceLoader();
+        setDepositUserBalance();
+      }
+    }, 1000); // TODO to constant
+    setTimeout(() => {
+      clearInterval(timerId);
+    }, 10000); // TODO to constant
+  } else {
+    setDepositUserBalance();
+  }
+}
+
+function capitalizeFirstLetter(string) {
+  return string[0].toUpperCase() + string.slice(1);
+}
+
+function clearDepositElementsWhenClose() {
+  userBalance = undefined;
+  depositValue.value = undefined;
+  depositImage.src = "";
+}

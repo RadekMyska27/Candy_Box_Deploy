@@ -34,21 +34,3 @@ for (let i = 0; i < submit_btns.length; i++) {
       });
   });
 }
-
-// submit_btn.addEventListener("click", async function () {
-//   console.log("button press");
-//   let response = await fetch(url, {
-//     method: "POST",
-//     body: JSON.stringify(body),
-//     headers: new Headers({
-//       "content-type": "application/json",
-//     }),
-//   })
-//     .then(async function (response) {
-//       var result = await response.json();
-//       console.log("result: " + result);
-//     })
-//     .catch(function (error) {
-//       console.log(error);
-//     });
-// });
