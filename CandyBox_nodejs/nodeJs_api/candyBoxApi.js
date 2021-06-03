@@ -266,6 +266,6 @@ app.post("/api/priceList", (req, res) => {
   res.send(JSON.stringify(getCandyPriceList()));
 });
 
-app.get("/api/users", (req, res) => {
+app.post("/api/users", (req, res) => {
   res.send(JSON.stringify(users.productionUsers));
 });

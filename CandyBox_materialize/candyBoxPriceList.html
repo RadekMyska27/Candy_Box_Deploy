@@ -49,6 +49,12 @@
 <!-- MOBILE NAV BAR  -->
 <ul id="nav-mobile" class="sidenav">
     <li>
+        <a id="users_btn_mobile"
+           class="dropdown-trigger btn waves-effect waves-light btn-large modal-trigger light-green darken-4"
+           data-target='dropdownUsers_mobile'>Uživatel</a>
+        <a id="users_account_btn_mobile" class="waves-effect waves-light btn-large modal-trigger light-green darken-4"
+           style="visibility: hidden"
+           href="#modal2">Muj učet</a>
         <a id="payment_btn_mobile" class="waves-effect waves-light btn-large modal-trigger light-green darken-4"
            href="#modal1">K platbě</a>
     </li>
@@ -56,6 +62,9 @@
 
 <!-- Dropdown Structure -->
 <ul id="dropdownUsers" class="dropdown-content">
+    <li><a href="#!">--:o--</a></li>
+</ul>
+<ul id="dropdownUsers_mobile" class="dropdown-content">
     <li><a href="#!">--:o--</a></li>
 </ul>
 
@@ -113,16 +122,21 @@
                         <h5 id="user_pay_balance" style="visibility: hidden">Zustatek: 0,-</h5>
                         <h5 id="modal_items">k platbě (položky) </h5>
                         <h4 id="modal_price">celkem za (celkova cena za vybrané položky)</h4>
-                        <a id="add_pay_qr" style="visibility: hidden"
-                           class="waves-effect waves-light btn-small  teal darken-3">generovat QR
-                            platbu</a>
-                        <a id="user_pay" style="visibility: hidden" class="waves-effect waves-light btn-small">zaplatit
+                        <a id="user_pay" style="visibility: hidden"
+                           class="waves-effect waves-light btn-small teal darken-3">zaplatit
                             z
                             mého učtu</a>
+                        <a id="add_pay_qr" style="visibility: hidden"
+                           class="waves-effect waves-light btn-small ">generovat QR
+                            platbu</a>
+
                     </div>
                     <img id="QrImg">
                     <div class="modal-footer">
-                        <a id="pay_done" href="#!" class="modal-close waves-effect waves-green btn-flat">ZAVŘIT</a>
+                        <a id="pay_continue" href="#!" class="modal-close waves-effect waves-light btn-small">POKRAČOVAT
+                            V NAKUPU / EDITOVAT NAKUP</a>
+                        <a id="pay_done" href="#!" class="modal-close waves-effect waves-light btn-small teal darken-3">PLATBA
+                            PROVEDENA ZAVŘIT</a>
                     </div>
                 </div>
 
@@ -143,15 +157,15 @@
                                 </div>
                             </div>
                         </form>
-                        <a id="add_deposit" class="waves-effect waves-light btn-small ">potvrdit vklad v hotovosti</a>
-                        <a id="add_deposit_qr" class="waves-effect waves-light btn-small  teal darken-3">generovat QR
-                            platbu</a>
+                        <a id="add_deposit" class="waves-effect waves-light btn-small ">platím hotově</a>
+                        <a id="add_deposit_qr" class="waves-effect waves-light btn-small  teal darken-3">chci QR
+                            kod</a>
                     </div>
                     <img id="deposit_qr_img">
 
                     <div class="modal-footer">
                         <a id="user_account_close" href="#!"
-                           class="modal-close waves-effect waves-green btn-flat">ZAVŘIT</a>
+                           class="modal-close waves-effect waves-light btn-small">ZAVŘIT</a>
                     </div>
                 </div>
             </div>
