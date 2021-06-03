@@ -1,0 +1,4 @@
+	BE and FE - setup
+	1. Install NodeJs - instructions for instal and NodeJs description - https://www.itnetwork.cz/javascript/nodejs/uvod-do-nodejs
+	2. Go to folder E:\Candy_repo\CandyBox 
+	3. RUN CandyBox.bat
