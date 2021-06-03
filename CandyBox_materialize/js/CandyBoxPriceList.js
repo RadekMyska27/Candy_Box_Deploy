@@ -31,6 +31,7 @@ let candiesToBuy = [];
 let users = [];
 let userName;
 let userBalance;
+const urlIp = "192.168.1.149";
 
 initPriceList().then((r) => console.log("Price list incited"));
 
@@ -40,7 +41,7 @@ async function initPriceList() {
 }
 
 function priceListLoad() {
-  const url = "http://192.168.1.137:3000/api/priceList"; // http://localhost:3000/api/priceList
+  const url = "http://"+urlIp+":3000/api/priceList"; // http://localhost:3000/api/priceList
   fetch(url, {
     method: "POST",
     headers: new Headers({
@@ -66,7 +67,7 @@ function priceListLoad() {
 }
 
 function usersLoad() {
-  const url = "http://192.168.1.137:3000/api/users"; //http://localhost:3000/api/users
+  const url = "http://"+urlIp+":3000/api/users"; //http://localhost:3000/api/users
   fetch(url, {
     method: "POST",
     headers: new Headers({
@@ -85,7 +86,7 @@ function usersLoad() {
 }
 
 function userBalanceLoad() {
-  const url = "http://192.168.1.137:3000/api/clientBalanceQuery"; // http://localhost:3000/api/clientBalanceQuery
+  const url = "http://"+urlIp+":3000/api/clientBalanceQuery"; // http://localhost:3000/api/clientBalanceQuery
   fetch(url, {
     method: "POST",
     headers: new Headers({
