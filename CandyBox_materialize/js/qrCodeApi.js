@@ -1,6 +1,6 @@
 
 function getQrImageApi() {
-  const url = "http://" + urlIp + ":3000api/QrCodeQuery"; //http://localhost:3000/api/QrCodeQuery
+  const url = "http://" + urlIp + ":3000/api/QrCodeQuery"; //http://localhost:3000/api/QrCodeQuery
 
   fetch(url, {
     method: "POST",
