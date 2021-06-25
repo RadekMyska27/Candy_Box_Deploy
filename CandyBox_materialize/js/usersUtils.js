@@ -21,6 +21,11 @@ function setUserSelectorListener() {
 
 function selectUserListener(selectUserItem) {
   selectUserItem.addEventListener("click", function () {
+    if (selectUserItem.value === "odhlasit") {
+      setElementsDefaultWhenSignOut();
+      return;
+    }
+
     userAccountButton.style.visibility = "visible";
     userAccountButtonMobile.style.visibility = "visible";
     userName = selectUserItem.value;

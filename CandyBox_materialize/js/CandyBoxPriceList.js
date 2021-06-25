@@ -31,7 +31,7 @@ let candiesToBuy = [];
 let users = [];
 let userName;
 let userBalance;
-const urlIp = "192.168.1.149";
+const urlIp = "localhost";
 
 initPriceList().then((r) => console.log("Price list incited"));
 
@@ -241,6 +241,7 @@ function setupUserAccountModal() {
   if (userName !== undefined) {
     userBalanceLoad();
   }
+  
   setupUserAccountModalElements();
 }
 

@@ -1,9 +1,8 @@
 /* eslint-disable no-undef */
 
-const date = new Date();
-
 class Utils {
   getVariableSymbol() {
+    let date = new Date();
     return (
       date.getDate().toString() +
       date.getMonth().toString() +
@@ -12,6 +11,7 @@ class Utils {
   }
 
   getActualDate() {
+    let date = new Date();
     return (
       date.getDate().toString() +
       "." +
@@ -28,10 +28,11 @@ class Utils {
   }
 
   getCurrentMonth() {
+    let date = new Date();
     let month = date.getMonth() + 1;
     return month.toString();
   }
-  
+
   async delay(ms) {
     await new Promise((resolve) => setTimeout(resolve, ms));
   }

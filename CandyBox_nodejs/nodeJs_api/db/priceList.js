@@ -7,6 +7,12 @@ const { CandyConstants } = require("../constants/candyConstants");
 function getCandyPriceList() {
   return [
     {
+      id: 31,
+      name: "universal_candy",
+      price: 25,
+      type: CandyConstants.candyType.cracker,
+    },
+    {
       id: 0,
       name: "croissant_maly",
       price: 20,
