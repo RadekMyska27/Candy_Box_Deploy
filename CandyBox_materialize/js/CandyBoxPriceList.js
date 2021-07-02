@@ -1,4 +1,9 @@
-const candyType = { cracker: "cracker", drinks: "drinks", other: "other" };
+const candyType = {
+  cracker: "cracker",
+  drinks: "drinks",
+  other: "other",
+  favorite: "favorite",
+};
 
 const shoppingList = document.getElementById("shopping_list");
 const depositQrButton = document.getElementById("add_deposit_qr");
@@ -27,6 +32,7 @@ const userAccountPayBalance = document.getElementById("user_pay_balance");
 const schoppingContinueButton = document.getElementById("pay_continue");
 
 let candyList = [];
+let favoriteCandyList = [];
 let candiesToBuy = [];
 let users = [];
 let userName;
@@ -53,13 +59,35 @@ function priceListLoad() {
       //  price list items init !!!!!!!!
       candyList = responseData;
       candyList.forEach((i) =>
-        addElement(capitalizeFirstLetter(i.name), i.price, i.id, i.type)
+        addPriceListItem(capitalizeFirstLetter(i.name), i.price, i.id, i.type)
       );
-      users.forEach((i) => addUserToDropDown(i.id, i.name));
-      setAddCandyListener();
-      setDeleteCandyListener();
-      candiesListToConsole();
-      setCandyImageEffectOnClick();
+      priceListItemSettings();
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+}
+
+function favoriteItemsLoad() {
+  const url = "http://" + urlIp + ":3000/api/favoriteItems"; // http://localhost:3000/api/priceList
+  fetch(url, {
+    method: "POST",
+    headers: new Headers({
+      "content-type": "application/json",
+    }),
+    body: JSON.stringify({
+      userName: userName,
+    }),
+  })
+    .then((response) => response.json())
+    .then((responseData) => {
+      //  price list items init !!!!!!!!
+      favoriteCandyList = responseData;
+      favoriteCandyList.forEach((i) =>
+        addPriceListItem(capitalizeFirstLetter(i.name), i.price, i.id, i.type)
+      );
+      favoriteListToConsole();
+      priceListItemSettings();
     })
     .catch(function (error) {
       console.log(error);
@@ -157,6 +185,13 @@ function savePayment() {
     .catch(function (error) {
       console.log(error);
     });
+}
+
+function priceListItemSettings() {
+  setAddCandyListener();
+  setDeleteCandyListener();
+  candiesListToConsole();
+  setCandyImageEffectOnClick();
 }
 
 shoppingList?.addEventListener("click", function () {
@@ -374,7 +409,29 @@ function getCandiesNamesToPay() {
 function candiesListToConsole() {
   candyList.forEach((candy) => {
     console.log(
-      "id: " + candy.id + ", Name: " + candy.name + ", Price: " + candy.price
+      "id: " +
+        candy.id +
+        ", Name: " +
+        candy.name +
+        ", Price: " +
+        candy.price +
+        " Type: " +
+        candy.type
+    );
+  });
+}
+
+function favoriteListToConsole() {
+  favoriteCandyList.forEach((candy) => {
+    console.log(
+      "id: " +
+        candy.id +
+        ", Name: " +
+        candy.name +
+        ", Price: " +
+        candy.price +
+        " Type: " +
+        candy.type
     );
   });
 }

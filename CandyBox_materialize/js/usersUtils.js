@@ -31,5 +31,10 @@ function selectUserListener(selectUserItem) {
     userName = selectUserItem.value;
     userSelectButton.innerHTML = selectUserItem.value;
     userSelectButtonMobile.innerHTML = selectUserItem.value;
+
+    if (favoriteCandyList.length === 0) {
+      //TODO is possible update items in list insted of ?
+      favoriteItemsLoad();
+    }
   });
 }

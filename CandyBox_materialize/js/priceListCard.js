@@ -1,4 +1,4 @@
-function addElement(name, price, id, type) {
+function addPriceListItem(name, price, id, type) {
   // create a new div element
   const containerDiv = document.createElement("div");
   const rowDiv = document.createElement("div");
@@ -77,6 +77,12 @@ function addElement(name, price, id, type) {
     case candyType.other:
       const rowTabOther = document?.getElementById("rowTab_other");
       rowTabOther.append(colDiv);
+      break;
+
+    case candyType.favorite:
+      const rowTabFavorite = document?.getElementById("rowTab_favorite");
+      console.log("rowTabFavorite");
+      rowTabFavorite.append(colDiv);
       break;
 
     default:

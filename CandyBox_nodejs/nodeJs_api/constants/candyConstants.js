@@ -4,7 +4,12 @@ const { Utils } = require("../utils/utils");
 const utils = new Utils();
 
 class CandyConstants {
-  static candyType = { cracker: "cracker", drinks: "drinks", other: "other" };
+  static candyType = {
+    cracker: "cracker",
+    drinks: "drinks",
+    other: "other",
+    favorite: "favorite",
+  };
 
   static variableSymbol = utils.getVariableSymbol();
 

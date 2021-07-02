@@ -1,9 +1,9 @@
 /* eslint-disable no-undef */
 
 class DbFormulas {
-  static balanceCellPosition = "F2";
+  static balanceCellPosition = "G2";
 
-  static sumOfAmount = "=SUMA(E:E)";
+  static sumOfAmount = "=SUMA(F:F)";
 }
 
 module.exports = {

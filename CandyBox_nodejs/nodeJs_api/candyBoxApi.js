@@ -9,6 +9,7 @@ const {
 } = require("./utils/clientsAccountCacheUtils");
 
 const express = require("express");
+const { PriceListUtils } = require("./utils/priceListUtils");
 const { CandyMessages } = require("./constants/candyMessages");
 const { Utils } = require("./utils/utils");
 const { CandyErrors } = require("./constants/candyErrors");
@@ -31,6 +32,7 @@ const apiUtils = new ApiUtils();
 const dbUtils = new DbUtils();
 const users = new Users();
 const utils = new Utils();
+const priceListUtils = new PriceListUtils();
 
 const doc = docSetup.doc;
 const app = express();
@@ -41,6 +43,7 @@ expressSetup.setUpNodeJsServer(app, express);
 
 //--Init database formulas
 dbUtils.setDbFormulas(doc);
+//TODO handle error
 //--------------
 
 //--INIT CACHE---//
@@ -268,4 +271,12 @@ app.post("/api/priceList", (req, res) => {
 
 app.post("/api/users", (req, res) => {
   res.send(JSON.stringify(users.productionUsers));
+});
+
+app.post("/api/favoriteItems", async (req, res) => {
+  const request = req.body;
+  //TODO request validation
+
+  let favorites = await priceListUtils.getFavoritesItems(doc, request.userName);
+  res.send(JSON.stringify(favorites));
 });

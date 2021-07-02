@@ -42,6 +42,7 @@ class PaymentRequestHandler {
         await sheet.addRow({
           id: await dbUtils.getNewRowId(sheet),
           date: utils.getActualDate(),
+          itemId: candy.id,
           item: candy.name,
           itemType: candy.type,
           amount: -Math.abs(candy.price),

@@ -72,4 +72,11 @@ describe("DbUtils", function () {
       expect(result).to.deep.equal(sheet);
     });
   });
+
+  describe("getUserItemsIds", async function () {
+    it("getUserItemsIds_shouldReturnId", async function () {
+      let result = await utils.getUserItemsIds(sheet);
+      expect(result).not.null;
+    });
+  });
 });

@@ -61,6 +61,22 @@ class DbUtils {
     await doc.loadInfo();
     return doc.sheetsByTitle[userName];
   }
+
+  async getPurchasedItemsIds(sheet) {
+    let id;
+    let ids = [];
+
+    await sheet.loadCells();
+
+    for (let i = 1; i < 1000; i++) {
+      id = await sheet.getCell(i, 2);
+      if (id.value != null) {
+        let index = ids.length;
+        ids[index] = id.value;
+      }
+    }
+    return ids;
+  }
 }
 
 module.exports = {
