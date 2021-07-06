@@ -184,6 +184,18 @@ function getCandyPriceList() {
       price: 30,
       type: CandyConstants.candyType.other,
     },
+    {
+      id: 33,
+      name: "mattoni",
+      price: 20,
+      type: CandyConstants.candyType.drinks,
+    },
+    {
+      id: 34,
+      name: "magnesia",
+      price: 20,
+      type: CandyConstants.candyType.drinks,
+    },
   ];
 }
 
