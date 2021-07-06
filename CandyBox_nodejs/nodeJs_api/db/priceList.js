@@ -7,12 +7,6 @@ const { CandyConstants } = require("../constants/candyConstants");
 function getCandyPriceList() {
   return [
     {
-      id: 31,
-      name: "universal_candy",
-      price: 25,
-      type: CandyConstants.candyType.cracker,
-    },
-    {
       id: 0,
       name: "croissant_maly",
       price: 20,
@@ -27,13 +21,13 @@ function getCandyPriceList() {
     {
       id: 2,
       name: "kitkat_klasik",
-      price: 15,
+      price: 20,
       type: CandyConstants.candyType.cracker,
     },
     {
       id: 3,
       name: "kitkat_tycinka",
-      price: 15,
+      price: 20,
       type: CandyConstants.candyType.cracker,
     },
     {
@@ -42,11 +36,11 @@ function getCandyPriceList() {
       price: 15,
       type: CandyConstants.candyType.cracker,
     },
-    { id: 5, name: "corny", price: 20, type: CandyConstants.candyType.cracker },
+    { id: 5, name: "corny", price: 25, type: CandyConstants.candyType.cracker },
     {
       id: 6,
       name: "polomacene_opl",
-      price: 15,
+      price: 20,
       type: CandyConstants.candyType.cracker,
     },
     { id: 7, name: "twix", price: 20, type: CandyConstants.candyType.cracker },
@@ -59,7 +53,7 @@ function getCandyPriceList() {
     {
       id: 9,
       name: "pernik",
-      price: 10,
+      price: 15,
       type: CandyConstants.candyType.cracker,
     },
     {
@@ -84,37 +78,37 @@ function getCandyPriceList() {
     {
       id: 14,
       name: "croissant_max",
-      price: 20,
+      price: 25,
       type: CandyConstants.candyType.cracker,
     },
     {
       id: 15,
       name: "birell",
-      price: 25,
+      price: 30,
       type: CandyConstants.candyType.drinks,
     },
     {
       id: 16,
       name: "birell_ovocny",
-      price: 25,
+      price: 30,
       type: CandyConstants.candyType.drinks,
     },
     {
       id: 17,
       name: "coca_cola",
-      price: 20,
+      price: 25,
       type: CandyConstants.candyType.drinks,
     },
     {
       id: 18,
       name: "shock_330ml",
-      price: 25,
+      price: 30,
       type: CandyConstants.candyType.drinks,
     },
     {
       id: 19,
       name: "red_bull_250ml",
-      price: 35,
+      price: 40,
       type: CandyConstants.candyType.drinks,
     },
     {
@@ -176,6 +170,18 @@ function getCandyPriceList() {
       id: 30,
       name: "hame_easy_cup",
       price: 80,
+      type: CandyConstants.candyType.other,
+    },
+    {
+      id: 31,
+      name: "universal_candy",
+      price: 25,
+      type: CandyConstants.candyType.cracker,
+    },
+    {
+      id: 32,
+      name: "bake_rolls",
+      price: 30,
       type: CandyConstants.candyType.other,
     },
   ];
