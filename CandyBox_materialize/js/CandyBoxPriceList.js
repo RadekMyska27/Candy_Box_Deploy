@@ -87,7 +87,7 @@ function favoriteItemsLoad() {
         addPriceListItem(capitalizeFirstLetter(i.name), i.price, i.id, i.type)
       );
       favoriteListToConsole();
-      priceListItemSettings();
+      // priceListItemSettings(); //TODO
     })
     .catch(function (error) {
       console.log(error);

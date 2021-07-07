@@ -34,7 +34,7 @@ function selectUserListener(selectUserItem) {
 
     if (favoriteCandyList.length === 0) {
       //TODO is possible update items in list insted of ?
-      favoriteItemsLoad();
+      //favoriteItemsLoad();
     }
   });
 }
