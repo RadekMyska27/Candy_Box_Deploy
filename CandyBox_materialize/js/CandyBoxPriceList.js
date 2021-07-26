@@ -33,6 +33,7 @@ const schoppingContinueButton = document.getElementById("pay_continue");
 
 let candyList = [];
 let favoriteCandyList = [];
+let userHistoryItems = [];
 let candiesToBuy = [];
 let users = [];
 let userName;
@@ -47,7 +48,7 @@ async function initPriceList() {
 }
 
 function priceListLoad() {
-  const url = "http://" + urlIp + ":3000/api/priceList"; // http://localhost:3000/api/priceList
+  const url = "http://" + urlIp + ":3000/api/priceList"; //TODO query
   fetch(url, {
     method: "POST",
     headers: new Headers({
@@ -61,15 +62,16 @@ function priceListLoad() {
       candyList.forEach((i) =>
         addPriceListItem(capitalizeFirstLetter(i.name), i.price, i.id, i.type)
       );
-      priceListItemSettings();
+      candiesListToConsole();
+      priceListItemSettings(candyList);
     })
     .catch(function (error) {
       console.log(error);
     });
 }
 
-function favoriteItemsLoad() {
-  const url = "http://" + urlIp + ":3000/api/favoriteItems"; // http://localhost:3000/api/priceList
+function userHistoryLoad() {
+  const url = "http://" + urlIp + ":3000/api/userHistory"; //TODO query
   fetch(url, {
     method: "POST",
     headers: new Headers({
@@ -81,13 +83,39 @@ function favoriteItemsLoad() {
   })
     .then((response) => response.json())
     .then((responseData) => {
-      //  price list items init !!!!!!!!
+      userHistoryItems = responseData.slice(-10);
+      userHistoryItems.forEach((i) =>
+        createUserHistoryItem(
+          i.creationDate,
+          capitalizeFirstLetter(i.name),
+          i.price
+        )
+      );
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+}
+
+function favoriteItemsLoad() {
+  const url = "http://" + urlIp + ":3000/api/favoriteItems"; //TODO query
+  fetch(url, {
+    method: "POST",
+    headers: new Headers({
+      "content-type": "application/json",
+    }),
+    body: JSON.stringify({
+      userName: userName,
+    }),
+  })
+    .then((response) => response.json())
+    .then((responseData) => {
       favoriteCandyList = responseData;
       favoriteCandyList.forEach((i) =>
         addPriceListItem(capitalizeFirstLetter(i.name), i.price, i.id, i.type)
       );
       favoriteListToConsole();
-      // priceListItemSettings(); //TODO
+      priceListItemSettings(favoriteCandyList);
     })
     .catch(function (error) {
       console.log(error);
@@ -95,7 +123,7 @@ function favoriteItemsLoad() {
 }
 
 function usersLoad() {
-  const url = "http://" + urlIp + ":3000/api/users"; //http://localhost:3000/api/users
+  const url = "http://" + urlIp + ":3000/api/users"; //TODO query
   fetch(url, {
     method: "POST",
     headers: new Headers({
@@ -154,6 +182,8 @@ function saveDeposit() {
       } else {
         console.log(response);
       }
+      deleteUserHistory();
+      userHistoryLoad();
     })
     .catch(function (error) {
       console.log(error);
@@ -187,11 +217,10 @@ function savePayment() {
     });
 }
 
-function priceListItemSettings() {
-  setAddCandyListener();
-  setDeleteCandyListener();
-  candiesListToConsole();
-  setCandyImageEffectOnClick();
+function priceListItemSettings(list) {
+  setAddCandyListener(list);
+  setDeleteCandyListener(list);
+  setCandyImageEffectOnClick(list);
 }
 
 shoppingList?.addEventListener("click", function () {
@@ -275,6 +304,7 @@ function enableDepositButtons() {
 function setupUserAccountModal() {
   if (userName !== undefined) {
     userBalanceLoad();
+    userHistoryLoad();
   }
 
   setupUserAccountModalElements();
@@ -363,20 +393,40 @@ function setElementsDefaultWhenSignOut() {
   userAccountButtonMobile.style.visibility = "hidden";
 }
 
+function generateCandyNumberLabel(originalId, candiesNumber) {
+  if (document.getElementById("content" + originalId) !== null) {
+    let cardContent = document.getElementById("content" + originalId);
+    if (cardContent !== null) {
+      cardContent.innerHTML = "V KOŠIKU: " + candiesNumber + " ks";
+    }
+  }
+}
+
 function setNumberOfCandies(id) {
   let candiesNumber = 0;
+  let originalId = undefined;
+
+  favoriteCandyList.forEach((favorite) => {
+    if (favorite.originalId === id) {
+      originalId = favorite.id;
+    }
+  });
 
   candiesToBuy.forEach((candy) => {
-    if (candy.id === id) {
+    if (candy.id === id && originalId === undefined) {
+      originalId = candy.originalId;
+    }
+
+    if (candy.id === id || candy.id === originalId) {
       candiesNumber++;
     }
   });
 
-  if (document.getElementById("content" + id) !== null) {
-    let cardContent = document.getElementById("content" + id);
-    if (cardContent !== null) {
-      cardContent.innerHTML = "V KOŠIKU: " + candiesNumber + " ks";
-    }
+  if (originalId !== undefined) {
+    generateCandyNumberLabel(originalId, candiesNumber);
+    generateCandyNumberLabel(id, candiesNumber);
+  } else {
+    generateCandyNumberLabel(id, candiesNumber);
   }
 
   return candiesNumber;
@@ -582,4 +632,5 @@ function clearDepositElementsWhenClose() {
   userBalance = undefined;
   depositValueInput.value = undefined;
   depositQrImage.src = "";
+  deleteUserHistory();
 }

@@ -28,6 +28,7 @@ class CandyMessages {
 
   static candyBoxStarted = "CANDY BOX STARTED :).";
   static candyBoxNotStarted = "CANDY BOX NOT STARTED :(.";
+  static userHistoryInit = "users history init";
 }
 
 module.exports = {

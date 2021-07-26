@@ -1,21 +1,26 @@
 /* eslint-disable no-undef */
-const { LogUtils } = require("../utils/logUtils");
-const { CandyErrors } = require("../constants/candyErrors");
-const { CandyMessages } = require("../constants/candyMessages");
-const { DbUtils } = require("../db/dbUtils");
-const { Validations } = require("../validations/validations");
-const { Utils } = require("../utils/utils");
+const {CandyWithHistory} = require("../db/candy");
+const {
+  ClientsAccountCacheUtils,
+} = require("../utils/clientsAccountCacheUtils");
+const {DbUtils} = require("../utils/dbUtils");
+const {LogUtils} = require("../utils/logUtils");
+const {CandyErrors} = require("../constants/candyErrors");
+const {CandyMessages} = require("../constants/candyMessages");
+const {Validations} = require("../validations/validations");
+const {Utils} = require("../utils/utils");
 
 const utils = new Utils();
 const validations = new Validations();
 const dbUtils = new DbUtils();
+const clientsAccountCacheUtils = new ClientsAccountCacheUtils();
 
 class DepositRequestHandler {
   get className() {
     return this.constructor.name;
   }
 
-  enrich(deposit, actualUserBalance, doc, userName) {
+  enrich(deposit, actualUserBalance, doc, userName, userHistoryDictionary) {
     let error = validations.processErrors(
       validations.docExist(doc),
       validations.usernameExist(userName)
@@ -23,6 +28,18 @@ class DepositRequestHandler {
     if (error !== undefined) {
       return error;
     }
+    //TODO tests
+    clientsAccountCacheUtils.updateUserHistory(
+      userName,
+      new CandyWithHistory(
+        null,
+        "deposit",
+        deposit,
+        "N/A",
+        utils.getActualDate()
+      ),
+      userHistoryDictionary
+    );
 
     return actualUserBalance + deposit;
   }
@@ -40,8 +57,8 @@ class DepositRequestHandler {
       await sheet.addRow({
         id: await dbUtils.getNewRowId(sheet),
         date: utils.getActualDate(),
-        item: "deposit",
-        itemType: "N/A",
+        item: "deposit", //TODO constant used also in enrich
+        itemType: "N/A", // TODO constant
         amount: deposit,
       });
       LogUtils.log(

@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
+const { DbUtils } = require("../utils/dbUtils");
 const { LogUtils } = require("../utils/logUtils");
-const { DbUtils } = require("../db/dbUtils");
 const { Validations } = require("../validations/validations");
 const { CandyMessages } = require("../constants/candyMessages");
 const { DbFormulas } = require("../db/dbFormulas");

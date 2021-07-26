@@ -1,10 +1,10 @@
 /* eslint-disable no-undef */
 
+const {DbUtils} = require("./dbUtils");
 const {CandyConstants} = require("../constants/candyConstants");
 const {getCandyPriceList} = require("../db/priceList");
 const {Candy} = require("../db/candy");
 const {Validations} = require("../validations/validations");
-const {DbUtils} = require("../db/dbUtils");
 
 const dbUtils = new DbUtils();
 const validations = new Validations();
@@ -42,10 +42,11 @@ class PriceListUtils {
     }
 
     let itemsByIdsCountSorted = new Map(
-        [...itemsByIdsCount.entries()].sort((a, b) => b[1] - a[1])
+      [...itemsByIdsCount.entries()].sort((a, b) => b[1] - a[1])
     );
 
     let candies = getCandyPriceList();
+    let numberOfCandies = candies.length;
 
     let favoriteCandies = [];
     let iterator = 0;
@@ -55,6 +56,8 @@ class PriceListUtils {
         let favoriteCandy = candies.find((candy) => candy.id === key);
         if (favoriteCandy !== undefined) {
           favoriteCandy.type = CandyConstants.candyType.favorite;
+          favoriteCandy.id = numberOfCandies + iterator;
+          favoriteCandy.originalId = key;
           favoriteCandies.push(favoriteCandy);
         }
       }
@@ -62,6 +65,17 @@ class PriceListUtils {
     });
 
     return favoriteCandies;
+  }
+
+  getFavoriteIds(candyPriceList) {
+    const favoriteIds = [];
+    let numberOfCandies = candyPriceList.length;
+
+    for (let i = numberOfCandies; i < numberOfCandies + 5; i++) {
+      let favoriteId = +i;
+      favoriteIds.push(favoriteId);
+    }
+    return favoriteIds;
   }
 }
 

@@ -6,11 +6,10 @@ var expect = chai.expect; // Using Expect style
 var should = chai.should(); // Using Should style
 
 const credentials = require("./../client_secret.json");
+const {DbUtils} = require("../utils/dbUtils");
 const {TestMock} = require("./testMock");
 const { docSetup } = require("../db/docSetup");
 const { CandyErrors } = require("../constants/candyErrors");
-
-const { DbUtils } = require("../db/dbUtils");
 
 describe("DbUtils", function () {
   let utils;
@@ -75,8 +74,14 @@ describe("DbUtils", function () {
 
   describe("getUserItemsIds", async function () {
     it("getUserItemsIds_shouldReturnId", async function () {
-      let result = await utils.getUserItemsIds(sheet);
+      let result = await utils.getPurchasedItemsIds(sheet);
       expect(result).not.null;
+    });
+  });
+  describe("getUserPurchasedItems", async function () {
+    it("getUserPurchasedItems", async function () {
+      let result = await utils.getUserPurchasedItems(doc, TestMock.testUser);
+      console.log(result);
     });
   });
 });

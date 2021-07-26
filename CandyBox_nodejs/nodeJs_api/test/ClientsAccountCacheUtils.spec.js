@@ -9,6 +9,7 @@ const credentials = require("./../client_secret.json");
 const { CandyErrors } = require("../constants/candyErrors");
 
 var chai = require("chai");
+const { CandyWithHistory } = require("../db/candy");
 const {
   UserBalanceQueryHandler,
 } = require("../handlers/userBalanceQueryHandler");
@@ -93,6 +94,38 @@ describe("ClientsAccountCacheUtils", function () {
         balanceDictionary
       );
       expect(balanceDictionary.get(TestMock.testUser)).to.equal(30);
+    });
+  });
+
+  describe("initUserHistory", () => {
+    //TODO tests
+    it("initUserHistory", async function () {
+      let userHistoryDictionary = new Map();
+      // let candyWithHistory = new CandyWithHistory(1, "name", 10, "cracker", "21.7")
+
+      await utils.initUserHistory(doc, userHistoryDictionary);
+
+      console.log(userHistoryDictionary.get(TestMock.testUser));
+    });
+  });
+
+  describe("updateUserHistory", () => {
+    it("updateUserHistory", () => {
+      let userHistoryDictionary = new Map();
+      let candyWithHistory1 = new CandyWithHistory(1, "name1", 10, "type1", 1);
+      let candyWithHistory2 = new CandyWithHistory(2, "name2", 20, "type2", 2);
+
+      userHistoryDictionary.set(TestMock.testUser, [candyWithHistory1]);
+
+      utils.updateUserHistory(
+        TestMock.testUser,
+        candyWithHistory2,
+        userHistoryDictionary
+      );
+
+      expect(
+        JSON.stringify(userHistoryDictionary.get(TestMock.testUser))
+      ).to.equal(JSON.stringify([candyWithHistory1, candyWithHistory2]));
     });
   });
 });

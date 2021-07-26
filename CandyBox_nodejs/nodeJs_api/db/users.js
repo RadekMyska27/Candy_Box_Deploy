@@ -10,7 +10,6 @@ class Users {
       new User(4, "mirek", UsersStatus.userStatus.production),
       new User(5, "radek", UsersStatus.userStatus.production),
       new User(6, "tomas", UsersStatus.userStatus.production),
-      //TODO set tests users as nonProduction after testing
       new User(8, "test_1", UsersStatus.userStatus.nonProduction),
       new User(9, "test_2", UsersStatus.userStatus.nonProduction),
     ];

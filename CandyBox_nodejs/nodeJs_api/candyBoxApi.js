@@ -9,6 +9,7 @@ const {
 } = require("./utils/clientsAccountCacheUtils");
 
 const express = require("express");
+const { DbUtils } = require("./utils/dbUtils");
 const { PriceListUtils } = require("./utils/priceListUtils");
 const { CandyMessages } = require("./constants/candyMessages");
 const { Utils } = require("./utils/utils");
@@ -16,7 +17,6 @@ const { CandyErrors } = require("./constants/candyErrors");
 const { Users } = require("./db/users");
 const { docSetup } = require("./db/docSetup");
 const { LogUtils } = require("./utils/logUtils");
-const { DbUtils } = require("./db/dbUtils");
 const { ApiUtils } = require("./utils/apiUtils");
 const { getCandyPriceList } = require("./db/priceList");
 
@@ -47,6 +47,16 @@ dbUtils.setDbFormulas(doc);
 //--------------
 
 //--INIT CACHE---//
+let userHistoryDictionary = new Map();
+clientsAccountCache.initUserHistory(doc, userHistoryDictionary).then((r) => {
+  if (r) {
+    LogUtils.log(
+      CandyConstants.nodeJsServerName,
+      CandyMessages.userHistoryInit
+    );
+  }
+});
+
 let balanceDictionary = new Map();
 clientsAccountCache.updateUsersBalances(doc, balanceDictionary).then(
   (response) =>
@@ -104,6 +114,8 @@ app.post("/api/depositRequest", async (req, res) => {
     request
   );
 
+  // TODO userName validations
+
   if (error !== undefined) {
     res.status(400).send(apiUtils.serverNotAvailableResponse(error));
   } else {
@@ -111,7 +123,8 @@ app.post("/api/depositRequest", async (req, res) => {
       request.deposit,
       balanceDictionary.get(request.userName),
       doc,
-      request.userName
+      request.userName,
+      userHistoryDictionary
     );
     res.send(JSON.stringify(enrichResponse));
     await clientsAccountCache.softUpdateUserBalance(
@@ -194,10 +207,11 @@ app.post("/api/paymentRequest", async (req, res) => {
       );
   } else {
     let enrichResponse = paymentRequestHandler.enrich(
-      -Math.abs(apiUtils.getCandiePrice(request.candies)),
+      request.candies,
       balanceDictionary.get(request.userName),
       doc,
-      request.userName
+      request.userName,
+      userHistoryDictionary
     );
     res.send(JSON.stringify(enrichResponse));
 
@@ -270,13 +284,36 @@ app.post("/api/priceList", (req, res) => {
 });
 
 app.post("/api/users", (req, res) => {
+  //TODO make query?
   res.send(JSON.stringify(users.productionUsers));
 });
 
 app.post("/api/favoriteItems", async (req, res) => {
+  //TODO make query?
+
   const request = req.body;
   //TODO request validation
 
   let favorites = await priceListUtils.getFavoritesItems(doc, request.userName);
+
+  //TODO error validation
+
   res.send(JSON.stringify(favorites));
+});
+
+app.post("/api/userHistory", async (req, res) => {
+  //TODO make query?
+  const request = req.body;
+
+  let error = validations.requestValidation(
+    CandyConstants.nodeJsServerName,
+    validationSchemes.userNameSchema,
+    { userName: request.userName }
+  );
+
+  if (error !== undefined) {
+    res.status(400).send(apiUtils.serverNotAvailableResponse(error));
+  }
+
+  res.send(JSON.stringify(userHistoryDictionary.get(request.userName)));
 });

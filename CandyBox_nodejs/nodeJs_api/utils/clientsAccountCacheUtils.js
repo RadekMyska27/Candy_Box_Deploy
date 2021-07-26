@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 
+const { DbUtils } = require("./dbUtils");
 const { LogUtils } = require("./logUtils");
 const { Users } = require("../db/users");
 const {
@@ -8,6 +9,7 @@ const {
 
 const userBalanceQuery = new UserBalanceQueryHandler();
 const users = new Users();
+const dbUtils = new DbUtils();
 
 class ClientsAccountCacheUtils {
   get className() {
@@ -39,12 +41,45 @@ class ClientsAccountCacheUtils {
             }
           })
           .catch((error) => {
-            console.log("error");
             LogUtils.log(this.className, error);
             reject(false);
           });
       });
     });
+  }
+
+  //TODO tests
+  initUserHistory(doc, userHistoryDictionary) {
+    let userHistoryList = [];
+
+    return new Promise((resolve, reject) => {
+      users.users.forEach((user) => {
+        let userName = user.name;
+        dbUtils
+          .getUserPurchasedItems(doc, userName)
+          .then((items) => {
+            userHistoryList = items;
+            userHistoryDictionary.set(userName, userHistoryList);
+            resolve(true);
+          })
+          .catch((error) => {
+            LogUtils.log(this.className, error);
+            reject(false);
+          });
+      });
+    });
+  }
+
+  //TODO tests
+  updateUserHistory(userName, candyWithHistory, userHistoryDictionary) {
+    if (userHistoryDictionary.get(userName) !== undefined) {
+      let userHistoryList = userHistoryDictionary.get(userName);
+      if (userHistoryList === undefined) {
+        userHistoryList = [];
+      }
+      userHistoryList.push(candyWithHistory);
+      userHistoryDictionary.set(userName, userHistoryList);
+    }
   }
 
   updateSingleUserBalance(userName, doc, balanceDictionary) {
