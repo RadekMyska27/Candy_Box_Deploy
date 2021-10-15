@@ -6,11 +6,11 @@ var assert = chai.assert; // Using Assert style
 var expect = chai.expect; // Using Expect style
 var should = chai.should(); // Using Should style
 
-const {TestMock} = require("./testMock");
-const {docSetup} = require("../db/docSetup");
+const { TestMock } = require("./testMock");
+const { docSetup } = require("../db/docSetup");
 const credentials = require("./../client_secret.json");
-const {getCandyPriceList} = require("../db/priceList");
-const {PriceListUtils} = require("../utils/priceListUtils");
+const { getCandyPriceList } = require("../db/priceList");
+const { PriceListUtils } = require("../utils/priceListUtils");
 
 describe("PriceListUtils", function () {
   this.timeout(TestMock.timeOut);

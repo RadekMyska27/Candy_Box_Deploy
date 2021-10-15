@@ -196,6 +196,18 @@ function getCandyPriceList() {
       price: 20,
       type: CandyConstants.candyType.drinks,
     },
+    {
+      id: 35,
+      name: "siesta",
+      price: 20,
+      type: CandyConstants.candyType.cracker,
+    },
+    {
+      id: 36,
+      name: "birell_ovocny_300ml",
+      price: 20,
+      type: CandyConstants.candyType.drinks,
+    },
   ];
 }
 

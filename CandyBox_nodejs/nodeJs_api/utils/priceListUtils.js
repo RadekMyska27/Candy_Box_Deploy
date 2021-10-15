@@ -1,10 +1,10 @@
 /* eslint-disable no-undef */
 
-const {DbUtils} = require("./dbUtils");
-const {CandyConstants} = require("../constants/candyConstants");
-const {getCandyPriceList} = require("../db/priceList");
-const {Candy} = require("../db/candy");
-const {Validations} = require("../validations/validations");
+const { DbUtils } = require("./dbUtils");
+const { CandyConstants } = require("../constants/candyConstants");
+const { getCandyPriceList } = require("../db/priceList");
+const { Candy } = require("../db/candy");
+const { Validations } = require("../validations/validations");
 
 const dbUtils = new DbUtils();
 const validations = new Validations();

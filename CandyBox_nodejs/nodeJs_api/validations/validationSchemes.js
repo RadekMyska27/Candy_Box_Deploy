@@ -1,10 +1,10 @@
 /* eslint-disable no-undef */
 
 const Joi = require("joi");
-const { PriceListUtils } = require("../utils/priceListUtils");
-const { getCandyPriceList } = require("../db/priceList");
-const { Users } = require("../db/users");
-const { CandyConstants } = require("../constants/candyConstants");
+const {PriceListUtils} = require("../utils/priceListUtils");
+const {getCandyPriceList} = require("../db/priceList");
+const {Users} = require("../db/users");
+const {CandyConstants} = require("../constants/candyConstants");
 
 const priceListUtils = new PriceListUtils();
 

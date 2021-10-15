@@ -33,16 +33,21 @@ describe("DepositRequestHandler", function () {
       expect(handler.enrich()).to.equal(CandyErrors.docNotExist);
     });
     it("enrich_ShouldReturnDeposit", function () {
-      let result = handler.enrich(10, 20, doc, TestMock.testUser);
-      expect(result).to.equal(30);
+      let result = handler.enrich(
+        TestMock.deposit,
+        TestMock.actualUserBalance,
+        doc,
+        TestMock.testUser
+      );
+      expect(result).to.equal(TestMock.deposit + TestMock.actualUserBalance);
     });
   });
 
   describe("consume", function () {
     it("consume_WhenSheetUndefined_ShouldReturnError", async () => {
-      expect(await handler.consume(doc, 10, "no_exist_User")).to.equal(
-        CandyErrors.sheetNotExist("no_exist_User")
-      );
+      expect(
+        await handler.consume(doc, TestMock.deposit, "no_exist_User")
+      ).to.equal(CandyErrors.sheetNotExist("no_exist_User"));
     });
 
     it("consume_ShouldWriteToDatabase", async () => {
@@ -56,7 +61,7 @@ describe("DepositRequestHandler", function () {
       await doc_2.useServiceAccountAuth(credentials);
       await doc_2.loadInfo();
       try {
-        await handler.consume(doc_2, 200, TestMock.testUser);
+        await handler.consume(doc_2, TestMock.deposit, TestMock.testUser);
       } catch (e) {
         console.log(e);
       }
@@ -70,7 +75,7 @@ describe("DepositRequestHandler", function () {
 
       let result = balanceAfter.value - balanceBefore.value;
 
-      expect(result).to.equal(200);
+      expect(result).to.equal(TestMock.deposit);
     });
   });
 });

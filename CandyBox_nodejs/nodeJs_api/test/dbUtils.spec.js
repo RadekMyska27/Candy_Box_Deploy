@@ -8,10 +8,12 @@ var should = chai.should(); // Using Should style
 const credentials = require("./../client_secret.json");
 const {DbUtils} = require("../utils/dbUtils");
 const {TestMock} = require("./testMock");
-const { docSetup } = require("../db/docSetup");
-const { CandyErrors } = require("../constants/candyErrors");
+const {docSetup} = require("../db/docSetup");
+const {CandyErrors} = require("../constants/candyErrors");
 
 describe("DbUtils", function () {
+  this.timeout(TestMock.timeOut);
+
   let utils;
   let doc;
   let sheet;

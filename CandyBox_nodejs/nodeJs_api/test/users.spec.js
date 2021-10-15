@@ -17,12 +17,13 @@ describe("Users", function () {
   it("users_shouldReturn_allUsers", function () {
     expect(JSON.stringify(users.users)).to.equal(
       JSON.stringify([
-        new User(0, "andy", UsersStatus.userStatus.production),
-        new User(1, "marek", UsersStatus.userStatus.production),
-        new User(2, "martin", UsersStatus.userStatus.production),
-        new User(3, "mirek", UsersStatus.userStatus.production),
-        new User(4, "radek", UsersStatus.userStatus.production),
-        new User(5, "tomas", UsersStatus.userStatus.production),
+        new User(0, "odhlasit", UsersStatus.userStatus.production),
+        new User(1, "andy", UsersStatus.userStatus.production),
+        new User(2, "marek", UsersStatus.userStatus.production),
+        new User(3, "martin", UsersStatus.userStatus.production),
+        new User(4, "mirek", UsersStatus.userStatus.production),
+        new User(5, "radek", UsersStatus.userStatus.production),
+        new User(6, "tomas", UsersStatus.userStatus.production),
         new User(8, "test_1", UsersStatus.userStatus.nonProduction),
         new User(9, "test_2", UsersStatus.userStatus.nonProduction),
       ])
@@ -32,12 +33,13 @@ describe("Users", function () {
   it("productionUsers_shouldReturn_productionUsers", function () {
     expect(JSON.stringify(users.productionUsers)).to.equal(
       JSON.stringify([
-        new User(0, "andy", UsersStatus.userStatus.production),
-        new User(1, "marek", UsersStatus.userStatus.production),
-        new User(2, "martin", UsersStatus.userStatus.production),
-        new User(3, "mirek", UsersStatus.userStatus.production),
-        new User(4, "radek", UsersStatus.userStatus.production),
-        new User(5, "tomas", UsersStatus.userStatus.production),
+        new User(0, "odhlasit", UsersStatus.userStatus.production),
+        new User(1, "andy", UsersStatus.userStatus.production),
+        new User(2, "marek", UsersStatus.userStatus.production),
+        new User(3, "martin", UsersStatus.userStatus.production),
+        new User(4, "mirek", UsersStatus.userStatus.production),
+        new User(5, "radek", UsersStatus.userStatus.production),
+        new User(6, "tomas", UsersStatus.userStatus.production),
       ])
     );
   });

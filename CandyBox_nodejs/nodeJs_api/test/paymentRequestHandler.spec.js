@@ -47,16 +47,15 @@ describe("PaymentRequestHandler", function () {
     });
 
     it("enrich_ShouldReturnBalance", function () {
-      let actualBalance = 40;
-      let candiesPriceToPay = -30;
-
       let result = handler.enrich(
-        candiesPriceToPay,
-        actualBalance,
+        TestMock.candiesPriceToPay,
+        TestMock.actualUserBalance,
         doc,
         TestMock.testUser
       );
-      expect(result).to.equal(10);
+      expect(result).to.equal(
+        TestMock.candiesPriceToPay + TestMock.actualUserBalance
+      );
     });
   });
 
