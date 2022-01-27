@@ -1,0 +1,81 @@
+5.1.2022-8:44:48 location: ExpressSetup message: Listening at port number: 3000
+5.1.2022-8:44:49 location: CandyBoxApi message: users history init
+5.1.2022-8:44:50 location: UserBalanceQueryHandler message: Account balance of user andy is: 120 CZK
+5.1.2022-8:44:50 location: UserBalanceQueryHandler message: Account balance of user marek is: 0 CZK
+5.1.2022-8:44:51 location: UserBalanceQueryHandler message: Account balance of user test_2 is: 100 CZK
+5.1.2022-8:44:51 location: UserBalanceQueryHandler message: Account balance of user martin is: 380 CZK
+5.1.2022-8:44:51 location: UserBalanceQueryHandler message: Account balance of user tomas is: 0 CZK
+5.1.2022-8:44:52 location: UserBalanceQueryHandler message: Account balance of user test_1 is: 80 CZK
+5.1.2022-8:44:52 location: UserBalanceQueryHandler message: Account balance of user mirek is: 0 CZK
+5.1.2022-8:44:53 location: UserBalanceQueryHandler message: Account balance of user radek is: 1908 CZK
+5.1.2022-8:44:53 location: CandyBoxApi message: CANDY BOX STARTED :).
+5.1.2022-8:45:16 location: ExpressSetup message: Listening at port number: 3000
+5.1.2022-8:45:17 location: CandyBoxApi message: users history init
+5.1.2022-8:45:18 location: UserBalanceQueryHandler message: Account balance of user marek is: 0 CZK
+5.1.2022-8:45:18 location: UserBalanceQueryHandler message: Account balance of user mirek is: 0 CZK
+5.1.2022-8:45:18 location: UserBalanceQueryHandler message: Account balance of user tomas is: 0 CZK
+5.1.2022-8:45:18 location: UserBalanceQueryHandler message: Account balance of user test_1 is: 80 CZK
+5.1.2022-8:45:19 location: UserBalanceQueryHandler message: Account balance of user test_2 is: 100 CZK
+5.1.2022-8:45:19 location: UserBalanceQueryHandler message: Account balance of user martin is: 380 CZK
+5.1.2022-8:45:19 location: UserBalanceQueryHandler message: Account balance of user andy is: 120 CZK
+5.1.2022-8:45:20 location: UserBalanceQueryHandler message: Account balance of user radek is: 1908 CZK
+5.1.2022-8:45:20 location: CandyBoxApi message: CANDY BOX STARTED :).
+5.1.2022-8:46:37 location: ExpressSetup message: Listening at port number: 3000
+5.1.2022-8:46:39 location: CandyBoxApi message: users history init
+5.1.2022-8:46:39 location: UserBalanceQueryHandler message: Account balance of user test_2 is: 100 CZK
+5.1.2022-8:46:40 location: UserBalanceQueryHandler message: Account balance of user martin is: 380 CZK
+5.1.2022-8:46:40 location: UserBalanceQueryHandler message: Account balance of user tomas is: 0 CZK
+5.1.2022-8:46:40 location: UserBalanceQueryHandler message: Account balance of user mirek is: 0 CZK
+5.1.2022-8:46:40 location: UserBalanceQueryHandler message: Account balance of user marek is: 0 CZK
+5.1.2022-8:46:41 location: UserBalanceQueryHandler message: Account balance of user test_1 is: 80 CZK
+5.1.2022-8:46:41 location: UserBalanceQueryHandler message: Account balance of user andy is: 120 CZK
+5.1.2022-8:46:42 location: UserBalanceQueryHandler message: Account balance of user radek is: 1908 CZK
+5.1.2022-8:46:42 location: CandyBoxApi message: CANDY BOX STARTED :).
+5.1.2022-8:47:30 location: PaymentRequestHandler message: client account successful update with item twix for user radek
+5.1.2022-8:47:31 location: PaymentRequestHandler message: client account successful update with item universal_candy for user radek
+5.1.2022-8:47:31 location: PaymentRequestHandler message: client account successful update with item kitkat_klasik for user radek
+5.1.2022-8:47:40 location: DepositRequestHandler message: client account successful update with deposit 20 for user radek
+5.1.2022-8:48:23 location: PaymentRequestHandler message: client account successful update with item twix for user radek
+5.1.2022-8:48:24 location: PaymentRequestHandler message: client account successful update with item universal_candy for user radek
+5.1.2022-8:48:25 location: PaymentRequestHandler message: client account successful update with item kitkat_klasik for user radek
+5.1.2022-8:48:26 location: PaymentRequestHandler message: client account successful update with item pernik for user radek
+5.1.2022-8:48:27 location: PaymentRequestHandler message: client account successful update with item snickers for user radek
+5.1.2022-8:48:27 location: PaymentRequestHandler message: client account successful update with item twix for user radek
+5.1.2022-8:48:28 location: PaymentRequestHandler message: client account successful update with item twix for user radek
+5.1.2022-8:48:29 location: PaymentRequestHandler message: client account successful update with item twix for user radek
+5.1.2022-8:48:30 location: PaymentRequestHandler message: client account successful update with item twix for user radek
+5.1.2022-8:48:31 location: PaymentRequestHandler message: client account successful update with item twix for user radek
+5.1.2022-8:48:31 location: PaymentRequestHandler message: client account successful update with item twix for user radek
+5.1.2022-8:48:32 location: PaymentRequestHandler message: client account successful update with item twix for user radek
+5.1.2022-8:48:33 location: PaymentRequestHandler message: client account successful update with item twix for user radek
+5.1.2022-8:48:34 location: PaymentRequestHandler message: client account successful update with item twix for user radek
+5.1.2022-8:48:35 location: PaymentRequestHandler message: client account successful update with item twix for user radek
+5.1.2022-8:48:36 location: PaymentRequestHandler message: client account successful update with item twix for user radek
+5.1.2022-8:48:36 location: PaymentRequestHandler message: client account successful update with item twix for user radek
+5.1.2022-8:48:37 location: PaymentRequestHandler message: client account successful update with item twix for user radek
+5.1.2022-8:48:38 location: PaymentRequestHandler message: client account successful update with item twix for user radek
+5.1.2022-8:48:39 location: PaymentRequestHandler message: client account successful update with item twix for user radek
+5.1.2022-8:48:40 location: PaymentRequestHandler message: client account successful update with item twix for user radek
+5.1.2022-8:48:40 location: PaymentRequestHandler message: client account successful update with item twix for user radek
+5.1.2022-8:48:41 location: PaymentRequestHandler message: client account successful update with item twix for user radek
+5.1.2022-8:48:42 location: PaymentRequestHandler message: client account successful update with item universal_candy for user radek
+5.1.2022-8:48:43 location: PaymentRequestHandler message: client account successful update with item universal_candy for user radek
+5.1.2022-8:48:43 location: PaymentRequestHandler message: client account successful update with item universal_candy for user radek
+5.1.2022-8:48:44 location: PaymentRequestHandler message: client account successful update with item universal_candy for user radek
+5.1.2022-8:48:45 location: PaymentRequestHandler message: client account successful update with item universal_candy for user radek
+5.1.2022-8:48:46 location: PaymentRequestHandler message: client account successful update with item universal_candy for user radek
+5.1.2022-8:48:47 location: PaymentRequestHandler message: client account successful update with item universal_candy for user radek
+5.1.2022-8:48:48 location: PaymentRequestHandler message: client account successful update with item universal_candy for user radek
+5.1.2022-8:48:49 location: PaymentRequestHandler message: client account successful update with item universal_candy for user radek
+5.1.2022-8:48:49 location: PaymentRequestHandler message: client account successful update with item universal_candy for user radek
+5.1.2022-8:51:49 location: ExpressSetup message: Listening at port number: 3000
+5.1.2022-8:51:50 location: CandyBoxApi message: users history init
+5.1.2022-8:51:51 location: UserBalanceQueryHandler message: Account balance of user tomas is: 0 CZK
+5.1.2022-8:51:52 location: UserBalanceQueryHandler message: Account balance of user marek is: 0 CZK
+5.1.2022-8:51:52 location: UserBalanceQueryHandler message: Account balance of user test_1 is: 80 CZK
+5.1.2022-8:51:52 location: UserBalanceQueryHandler message: Account balance of user test_2 is: 100 CZK
+5.1.2022-8:51:52 location: UserBalanceQueryHandler message: Account balance of user mirek is: 0 CZK
+5.1.2022-8:51:52 location: UserBalanceQueryHandler message: Account balance of user andy is: 120 CZK
+5.1.2022-8:51:52 location: UserBalanceQueryHandler message: Account balance of user martin is: 380 CZK
+5.1.2022-8:51:54 location: UserBalanceQueryHandler message: Account balance of user radek is: 1153 CZK
+5.1.2022-8:51:54 location: CandyBoxApi message: CANDY BOX STARTED :).
