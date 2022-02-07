@@ -27,6 +27,14 @@ class LogUtils {
       utils.getActualDate() + " location: " + className + " message: " + message
     );
   }
+
+  static getCandiesToLog(candies) {
+    let candiesToLog = [];
+
+    candies.forEach((candy) => candiesToLog.push(" " + candy.name));
+
+    return candiesToLog.toString();
+  }
 }
 
 module.exports = {

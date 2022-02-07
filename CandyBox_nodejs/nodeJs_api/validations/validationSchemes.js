@@ -1,10 +1,9 @@
 /* eslint-disable no-undef */
 
 const Joi = require("joi");
-const {PriceListUtils} = require("../utils/priceListUtils");
-const {getCandyPriceList} = require("../db/priceList");
-const {Users} = require("../db/users");
-const {CandyConstants} = require("../constants/candyConstants");
+const { PriceListUtils } = require("../utils/priceListUtils");
+const { Users } = require("../db/users");
+const { CandyConstants } = require("../constants/candyConstants");
 
 const priceListUtils = new PriceListUtils();
 
@@ -12,9 +11,9 @@ class ValidationSchemes {
   get userNameSchema() {
     return Joi.object({
       userName: Joi.string()
-          .min(1)
-          .max(CandyConstants.maxMessageChars)
-          .valid(...getUsersNames())
+        .min(1)
+        .max(CandyConstants.maxMessageChars)
+        .valid(...getUsersNames())
         .required(),
     });
   }
@@ -22,13 +21,13 @@ class ValidationSchemes {
   get candySchema() {
     return Joi.object({
       id: Joi.number()
-        .valid(...getCandyIds())
+        // .valid(...getCandyIds(doc))  // TODO add validation for candies Ids
         .required(),
       originalId: Joi.number().optional(),
       name: Joi.string()
         .min(2)
         .max(CandyConstants.maxMessageChars)
-        .valid(...getCandyNames())
+        // .valid(...getCandyNames(doc)) // TODO add validation for candies name
         .required(),
       type: Joi.string()
         .min(2)
@@ -74,12 +73,12 @@ function getUsersNames() {
   return users.users.map((i) => i.name);
 }
 
-function getCandyNames() {
-  return getCandyPriceList().map((i) => i.name);
+async function getCandyNames(doc) {
+  return await priceListUtils.getCandiesAtStore(doc).map((i) => i.name);
 }
 
-function getCandyIds() {
-  let candyPriceList = getCandyPriceList();
+async function getCandyIds(doc) {
+  let candyPriceList = await priceListUtils.getCandiesAtStore(doc);
 
   return candyPriceList
     .map((i) => i.id)

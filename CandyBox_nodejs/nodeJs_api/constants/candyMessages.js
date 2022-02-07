@@ -13,6 +13,10 @@ class CandyMessages {
     );
   }
 
+  static candyStoreUpdated(candyName) {
+    return "candy store was update for candy " + candyName;
+  }
+
   static accountUpdateByDeposit(deposit, userName) {
     return (
       "client account successful update with deposit " +
@@ -26,9 +30,14 @@ class CandyMessages {
     return "Listening at port number: " + port;
   }
 
+  static candyBoxStarting = "CANDY BOX is starting please wait .....";
   static candyBoxStarted = "CANDY BOX STARTED :).";
   static candyBoxNotStarted = "CANDY BOX NOT STARTED :(.";
   static userHistoryInit = "users history init";
+  static dailyCallOfUsersBalanceStarted = "Daily Call of users balance STARTED";
+  static dailyCallOfUsersBalanceFINISHED =
+    "Daily Call of users balance Successfully FINISHED";
+  static dailyCallOfUsersBalanceFailed = "Daily Call of users balance FAILED";
 }
 
 module.exports = {

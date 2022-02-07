@@ -25,10 +25,14 @@ class CandyConstants {
 
   static maxMessageChars = 100;
 
+  static twentyFourHoursToMilliseconds = 86400000;
+
   static productionGoogleSpreadsheet =
     "1CfGPxISyKun9z3qV303FUrPiDD8DkWc6wgkM0L9tbG0";
   static developmentGoogleSpreadsheet =
     "1wkCtjK0iwjlgkr-UaXuVtG1EySjxS0XDad9cuF2HohY";
+
+  static candyStoreName = "candy_store";
 
   static qrCodeLog(amount, message) {
     return (

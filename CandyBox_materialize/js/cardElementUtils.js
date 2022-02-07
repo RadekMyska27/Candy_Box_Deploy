@@ -16,7 +16,12 @@ function addItemListener(addElement, id, list) {
     addElement.addEventListener("click", function () {
       list.forEach((candy) => {
         if (candy.id === id) {
-          candiesToBuy.push(candy);
+          addCandieToBuy({
+            id: candy.id,
+            name: candy.name,
+            price: candy.price,
+            type: candy.type,
+          });
           setShoppingListPrice();
           setNumberOfCandies(id);
         }
@@ -40,14 +45,14 @@ function setDeleteCandyListener(list) {
       );
     }
 
-    favoriteCandyList.forEach((favorite) => {
-      if (favorite.originalId === id) {
-        originalId = favorite.id;
-        deleteButtonOriginalId = document.getElementById(
-          "delete_" + originalId.toString()
-        );
-      }
-    });
+    // favoriteCandyList.forEach((favorite) => {
+    //   if (favorite.originalId === id) {
+    //     originalId = favorite.id;
+    //     deleteButtonOriginalId = document.getElementById(
+    //       "delete_" + originalId.toString()
+    //     );
+    //   }
+    // });
 
     const deleteButton = document.getElementById("delete_" + id.toString());
 
@@ -91,4 +96,8 @@ function getNameLabel(candyLabel) {
   capitalizeFirstLetter(candyLabel);
   candyLabel.replace("_", " ");
   return candyLabel;
+}
+
+function capitalizeFirstLetter(string) {
+  return string[0].toUpperCase() + string.slice(1);
 }

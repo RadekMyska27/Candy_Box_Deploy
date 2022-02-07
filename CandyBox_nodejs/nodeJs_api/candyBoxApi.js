@@ -18,7 +18,6 @@ const { Users } = require("./db/users");
 const { docSetup } = require("./db/docSetup");
 const { LogUtils } = require("./utils/logUtils");
 const { ApiUtils } = require("./utils/apiUtils");
-const { getCandyPriceList } = require("./db/priceList");
 
 const { ExpressSetup } = require("./utils/expressSetup");
 
@@ -58,8 +57,9 @@ clientsAccountCache.initUserHistory(doc, userHistoryDictionary).then((r) => {
 });
 
 let balanceDictionary = new Map();
-clientsAccountCache.updateUsersBalances(doc, balanceDictionary).then(
-  (response) =>
+clientsAccountCache
+  .updateUsersBalances(doc, balanceDictionary)
+  .then((response) => {
     //--CANDY BOX STARTED---//
     response
       ? LogUtils.log(
@@ -69,9 +69,36 @@ clientsAccountCache.updateUsersBalances(doc, balanceDictionary).then(
       : LogUtils.log(
           CandyConstants.nodeJsServerName,
           CandyMessages.candyBoxNotStarted
-        )
-  //---------------
+        );
+  });
+
+//-- Daily call users balance --//
+setInterval(
+  () => callUsersBalance(),
+  CandyConstants.twentyFourHoursToMilliseconds
 );
+
+//TODO unit tests
+function callUsersBalance() {
+  LogUtils.log(
+    CandyConstants.nodeJsServerName,
+    CandyMessages.dailyCallOfUsersBalanceStarted
+  );
+  clientsAccountCache
+    .getUsersBalances(doc)
+    .then((response) =>
+      response
+        ? LogUtils.log(
+            CandyConstants.nodeJsServerName,
+            CandyMessages.dailyCallOfUsersBalanceFINISHED
+          )
+        : LogUtils.log(
+            CandyConstants.nodeJsServerName,
+            CandyMessages.dailyCallOfUsersBalanceFailed
+          )
+    );
+}
+
 //---------------
 
 app.get("/api/CandyBoxNodeJs", (req, res) => {
@@ -90,6 +117,10 @@ app.post("/api/clientBalanceQuery", async (req, res) => {
   if (error !== undefined) {
     res.status(400).send(JSON.stringify(error));
   } else {
+    LogUtils.log(
+      CandyConstants.nodeJsServerName,
+      "clientBalanceQuery called userName: " + request.userName
+    );
     res.send(JSON.stringify(balanceDictionary.get(request.userName)));
   }
 });
@@ -119,6 +150,13 @@ app.post("/api/depositRequest", async (req, res) => {
   if (error !== undefined) {
     res.status(400).send(apiUtils.serverNotAvailableResponse(error));
   } else {
+    LogUtils.log(
+      CandyConstants.nodeJsServerName,
+      "depositRequest called userName: " +
+        request.userName +
+        " with  deposit " +
+        request.deposit
+    );
     let enrichResponse = depositRequestHandler.enrich(
       request.deposit,
       balanceDictionary.get(request.userName),
@@ -206,6 +244,13 @@ app.post("/api/paymentRequest", async (req, res) => {
         apiUtils.serverNotAvailableResponse(requestError.join(", ").toString())
       );
   } else {
+    LogUtils.log(
+      CandyConstants.nodeJsServerName,
+      "paymentRequest called userName: " +
+        request.userName +
+        " with candies " +
+        LogUtils.getCandiesToLog(request.candies)
+    );
     let enrichResponse = paymentRequestHandler.enrich(
       request.candies,
       balanceDictionary.get(request.userName),
@@ -267,6 +312,10 @@ app.post("/api/QrCodeQuery", (req, res) => {
   if (error !== undefined) {
     res.status(400).send(JSON.stringify(error));
   } else {
+    LogUtils.log(
+      CandyConstants.nodeJsServerName,
+      "QrCodeQuery called with " + request.message + " price " + request.price
+    );
     const amount = request.price;
     const message = request.message;
     const urlApi = CandyConstants.qrCodeUrl(amount, message);
@@ -279,12 +328,9 @@ app.post("/api/QrCodeQuery", (req, res) => {
   }
 });
 
-app.post("/api/priceList", (req, res) => {
-  res.send(JSON.stringify(getCandyPriceList()));
-});
-
 app.post("/api/users", (req, res) => {
   //TODO make query?
+  LogUtils.log(CandyConstants.nodeJsServerName, "users called ");
   res.send(JSON.stringify(users.productionUsers));
 });
 
@@ -315,5 +361,66 @@ app.post("/api/userHistory", async (req, res) => {
     res.status(400).send(apiUtils.serverNotAvailableResponse(error));
   }
 
+  LogUtils.log(
+    CandyConstants.nodeJsServerName,
+    "userHistory with " + "userName: " + request.userName
+  );
+
   res.send(JSON.stringify(userHistoryDictionary.get(request.userName)));
+});
+
+app.post("/api/queryItemsAtStore", async (req, res) => {
+  //TODO request validation
+
+  LogUtils.log(CandyConstants.nodeJsServerName, "queryItemsAtStore called ");
+
+  let itemsAtStore = await priceListUtils.getCandiesAtStore(doc);
+
+  res.send(JSON.stringify(itemsAtStore));
+});
+
+app.post("/api/queryItemsOutOfStock", async (req, res) => {
+  //TODO request validation
+
+  LogUtils.log(CandyConstants.nodeJsServerName, "queryItemsOutOfStock called ");
+
+  let itemsOutOfStock = await dbUtils.getListOfItemsOutOfStore(doc);
+
+  res.send(JSON.stringify(itemsOutOfStock));
+});
+
+app.post("/api/updateItemsAtStore", async (req, res) => {
+  const request = req.body;
+
+  //TODO request validation
+
+  LogUtils.log(CandyConstants.nodeJsServerName, "updateItemsAtStore called ");
+
+  //TODO handle request -> call dbUtils updateItemAtStore
+  //TODO make util for sheet validation
+  const candyStoreSheet = await dbUtils.getSheetByUserName(
+    doc,
+    CandyConstants.candyStoreName
+  );
+  let error = validations.sheetExist(
+    candyStoreSheet,
+    CandyConstants.candyStoreName
+  );
+
+  if (error !== undefined) {
+    return error;
+  }
+
+  const updateItem = await dbUtils.updateItemAtStore(
+    candyStoreSheet,
+    request.id,
+    request.amountToAdd,
+    request.minAmountValue,
+    request.maxAmountValue,
+    request.price,
+    request.name,
+    false
+  );
+
+  res.send(JSON.stringify(updateItem));
 });

@@ -17,12 +17,30 @@ class Candy {
 
 //TODO unit test
 class CandyWithHistory extends Candy {
-  constructor(id, name, price, type, creationDate) {
+  constructor(
+    id,
+    name,
+    price,
+    type,
+    creationDate,
+    actualAmount,
+    minAmount,
+    maxAmount,
+    consumed
+  ) {
     super(id, name, price, type);
-    this.creationDate = creationDate;
+    this.lastUpdateDate = creationDate;
+    this.actualAmount = actualAmount;
+    this.minAmount = minAmount;
+    this.maxAmount = maxAmount;
+    this.consumed = consumed;
   }
 
-  creationDate;
+  lastUpdateDate;
+  actualAmount;
+  minAmount;
+  maxAmount;
+  consumed;
 }
 
 module.exports = {

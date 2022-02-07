@@ -81,7 +81,6 @@ function addPriceListItem(name, price, id, type) {
 
     case candyType.favorite:
       const rowTabFavorite = document?.getElementById("rowTab_favorite");
-      console.log("rowTabFavorite");
       rowTabFavorite.append(colDiv);
       break;
 

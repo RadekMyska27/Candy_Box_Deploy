@@ -48,6 +48,26 @@ class ClientsAccountCacheUtils {
     });
   }
 
+  getUsersBalances(doc) {
+    let iterator = 0;
+    return new Promise((resolve, reject) => {
+      users.users.forEach((i) => {
+        let userName = i.name;
+        this.loadUserBalance(doc, userName)
+          .then(() => {
+            iterator++;
+            if (iterator === users.users.length) {
+              resolve(true);
+            }
+          })
+          .catch((error) => {
+            LogUtils.log(this.className, error);
+            reject(false);
+          });
+      });
+    });
+  }
+
   //TODO tests
   initUserHistory(doc, userHistoryDictionary) {
     let userHistoryList = [];
@@ -56,7 +76,7 @@ class ClientsAccountCacheUtils {
       users.users.forEach((user) => {
         let userName = user.name;
         dbUtils
-          .getUserPurchasedItems(doc, userName)
+          .getItemsAccordingUserName(doc, userName)
           .then((items) => {
             userHistoryList = items;
             userHistoryDictionary.set(userName, userHistoryList);

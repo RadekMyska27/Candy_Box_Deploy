@@ -9,8 +9,8 @@ var should = chai.should(); // Using Should style
 const { TestMock } = require("./testMock");
 const { docSetup } = require("../db/docSetup");
 const credentials = require("./../client_secret.json");
-const { getCandyPriceList } = require("../db/priceList");
 const { PriceListUtils } = require("../utils/priceListUtils");
+const { CandyConstants } = require("../constants/candyConstants");
 
 describe("PriceListUtils", function () {
   this.timeout(TestMock.timeOut);
@@ -29,17 +29,16 @@ describe("PriceListUtils", function () {
     await sheet.loadCells();
   });
 
-  describe("getFavoritesItems", function () {
-    it("getFavoritesItems", async function () {
-      await utils.getFavoritesItems(doc, TestMock.testUser);
+  describe("getCandiesAtStore", function () {
+    it("getCandiesAtStore", async function () {
+      await utils.getCandiesAtStore(doc, CandyConstants.candyStoreName);
       //TODO test
     });
   });
 
-  describe("getFavoriteIds", function () {
-    it("getFavoriteIds_shouldReturnIds", function () {
-      let candyPriceList = getCandyPriceList();
-      utils.getFavoriteIds(candyPriceList);
+  describe("getFavoritesItems", function () {
+    it("getFavoritesItems", async function () {
+      await utils.getFavoritesItems(doc, TestMock.testUser);
       //TODO test
     });
   });

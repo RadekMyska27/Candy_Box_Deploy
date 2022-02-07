@@ -1,15 +1,16 @@
 /* eslint-disable no-undef */
-const {ApiUtils} = require("../utils/apiUtils");
-const {CandyWithHistory} = require("../db/candy");
+const { ApiUtils } = require("../utils/apiUtils");
+const { CandyWithHistory } = require("../db/candy");
 const {
   ClientsAccountCacheUtils,
 } = require("../utils/clientsAccountCacheUtils");
-const {DbUtils} = require("../utils/dbUtils");
-const {LogUtils} = require("../utils/logUtils");
-const {CandyErrors} = require("../constants/candyErrors");
-const {CandyMessages} = require("../constants/candyMessages");
-const {Validations} = require("../validations/validations");
-const {Utils} = require("../utils/utils");
+const { DbUtils } = require("../utils/dbUtils");
+const { LogUtils } = require("../utils/logUtils");
+const { CandyErrors } = require("../constants/candyErrors");
+const { CandyMessages } = require("../constants/candyMessages");
+const { Validations } = require("../validations/validations");
+const { Utils } = require("../utils/utils");
+const { CandyConstants } = require("../constants/candyConstants");
 const apiUtils = new ApiUtils();
 
 const utils = new Utils();
@@ -55,8 +56,19 @@ class PaymentRequestHandler {
   async consume(doc, candies, userName) {
     try {
       const sheet = await dbUtils.getSheetByUserName(doc, userName);
+      const candyStoreSheet = await dbUtils.getSheetByUserName(
+        doc,
+        CandyConstants.candyStoreName
+      );
 
       let error = validations.sheetExist(sheet, userName);
+      if (error === undefined) {
+        error = validations.sheetExist(
+          candyStoreSheet,
+          CandyConstants.candyStoreName
+        );
+      }
+
       if (error !== undefined) {
         return error;
       }
@@ -76,9 +88,14 @@ class PaymentRequestHandler {
           this.className,
           CandyMessages.accountUpdateByPay(candy.name, userName)
         );
-      }
+        await sheet.saveUpdatedCells();
 
-      await sheet.saveUpdatedCells();
+        await dbUtils.decreaseItemAmountAtStore(
+          candyStoreSheet,
+          candy.id,
+          candy.name
+        );
+      }
     } catch (e) {
       LogUtils.log(this.className, CandyErrors.googleSheetError + e);
     }

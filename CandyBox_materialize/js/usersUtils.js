@@ -32,9 +32,19 @@ function selectUserListener(selectUserItem) {
     userSelectButton.innerHTML = selectUserItem.value;
     userSelectButtonMobile.innerHTML = selectUserItem.value;
 
-    if (favoriteCandyList.length === 0) {
-      //TODO is possible update items in list insted of ?
-      favoriteItemsLoad();
-    }
+    shouldBeAdminPageButtonVisible();
+
+    // if (favoriteCandyList.length === 0) {
+    //   //TODO is possible update items in list insted of ?
+    //   favoriteItemsLoad();
+    // }
   });
+}
+
+function shouldBeAdminPageButtonVisible() {
+  if (userName === "radek") {
+    redirectAdminPageButton.style.visibility = "visible";
+  } else {
+    redirectAdminPageButton.style.visibility = "hidden";
+  }
 }

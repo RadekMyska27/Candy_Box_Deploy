@@ -30,9 +30,10 @@ const modalItems = document.getElementById("modal_items");
 const modalPrice = document.getElementById("modal_price");
 const userAccountPayBalance = document.getElementById("user_pay_balance");
 const schoppingContinueButton = document.getElementById("pay_continue");
+const redirectAdminPageButton = document.getElementById("redirect_adminPage");
 
 let candyList = [];
-let favoriteCandyList = [];
+// let favoriteCandyList = [];
 let userHistoryItems = [];
 let candiesToBuy = [];
 let users = [];
@@ -48,7 +49,7 @@ async function initPriceList() {
 }
 
 function priceListLoad() {
-  const url = "http://" + urlIp + ":3000/api/priceList"; //TODO query
+  const url = "http://" + urlIp + ":3000/api/queryItemsAtStore";
   fetch(url, {
     method: "POST",
     headers: new Headers({
@@ -59,10 +60,10 @@ function priceListLoad() {
     .then((responseData) => {
       //  price list items init !!!!!!!!
       candyList = responseData;
-      candyList.forEach((i) =>
-        addPriceListItem(capitalizeFirstLetter(i.name), i.price, i.id, i.type)
-      );
-      candiesListToConsole();
+      candyList.forEach((i) => {
+        addPriceListItem(capitalizeFirstLetter(i.name), i.price, i.id, i.type);
+      });
+      // candiesListToConsole();
       priceListItemSettings(candyList);
     })
     .catch(function (error) {
@@ -86,7 +87,7 @@ function userHistoryLoad() {
       userHistoryItems = responseData.slice(-10);
       userHistoryItems.forEach((i) =>
         createUserHistoryItem(
-          i.creationDate,
+          i.lastUpdateDate,
           capitalizeFirstLetter(i.name),
           i.price
         )
@@ -97,30 +98,30 @@ function userHistoryLoad() {
     });
 }
 
-function favoriteItemsLoad() {
-  const url = "http://" + urlIp + ":3000/api/favoriteItems"; //TODO query
-  fetch(url, {
-    method: "POST",
-    headers: new Headers({
-      "content-type": "application/json",
-    }),
-    body: JSON.stringify({
-      userName: userName,
-    }),
-  })
-    .then((response) => response.json())
-    .then((responseData) => {
-      favoriteCandyList = responseData;
-      favoriteCandyList.forEach((i) =>
-        addPriceListItem(capitalizeFirstLetter(i.name), i.price, i.id, i.type)
-      );
-      favoriteListToConsole();
-      priceListItemSettings(favoriteCandyList);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-}
+// function favoriteItemsLoad() {
+//   const url = "http://" + urlIp + ":3000/api/favoriteItems"; //TODO query
+//   fetch(url, {
+//     method: "POST",
+//     headers: new Headers({
+//       "content-type": "application/json",
+//     }),
+//     body: JSON.stringify({
+//       userName: userName,
+//     }),
+//   })
+//     .then((response) => response.json())
+//     .then((responseData) => {
+//       favoriteCandyList = responseData;
+//       favoriteCandyList.forEach((i) =>
+//         addPriceListItem(capitalizeFirstLetter(i.name), i.price, i.id, i.type)
+//       );
+//       // favoriteListToConsole();
+//       priceListItemSettings(favoriteCandyList);
+//     })
+//     .catch(function (error) {
+//       console.log(error);
+//     });
+// }
 
 function usersLoad() {
   const url = "http://" + urlIp + ":3000/api/users"; //TODO query
@@ -229,6 +230,7 @@ shoppingList?.addEventListener("click", function () {
 
 userAccountButton?.addEventListener("click", function () {
   setupUserAccountModal();
+  shouldBeAdminPageButtonVisible();
 });
 
 userAccountButtonMobile?.addEventListener("click", function () {
@@ -391,6 +393,7 @@ function setElementsDefaultWhenSignOut() {
   userSelectButtonMobile.innerHTML = "Uživatel";
   userAccountButton.style.visibility = "hidden";
   userAccountButtonMobile.style.visibility = "hidden";
+  shouldBeAdminPageButtonVisible();
 }
 
 function generateCandyNumberLabel(originalId, candiesNumber) {
@@ -406,11 +409,11 @@ function setNumberOfCandies(id) {
   let candiesNumber = 0;
   let originalId = undefined;
 
-  favoriteCandyList.forEach((favorite) => {
-    if (favorite.originalId === id) {
-      originalId = favorite.id;
-    }
-  });
+  // favoriteCandyList.forEach((favorite) => {
+  //   if (favorite.originalId === id) {
+  //     originalId = favorite.id;
+  //   }
+  // });
 
   candiesToBuy.forEach((candy) => {
     if (candy.id === id && originalId === undefined) {
@@ -471,20 +474,20 @@ function candiesListToConsole() {
   });
 }
 
-function favoriteListToConsole() {
-  favoriteCandyList.forEach((candy) => {
-    console.log(
-      "id: " +
-        candy.id +
-        ", Name: " +
-        candy.name +
-        ", Price: " +
-        candy.price +
-        " Type: " +
-        candy.type
-    );
-  });
-}
+// function favoriteListToConsole() {
+//   favoriteCandyList.forEach((candy) => {
+//     console.log(
+//       "id: " +
+//         candy.id +
+//         ", Name: " +
+//         candy.name +
+//         ", Price: " +
+//         candy.price +
+//         " Type: " +
+//         candy.type
+//     );
+//   });
+// }
 
 function setSelectedCandiesToDisplay() {
   if (modalItems !== null) {
@@ -622,10 +625,6 @@ function tryUpdateDisabledAttributeQrButton() {
   depositValueInput.value > 0 && depositValueInput.value !== undefined
     ? depositQrButton.removeAttribute("disabled")
     : depositQrButton.setAttribute("disabled", "disabled");
-}
-
-function capitalizeFirstLetter(string) {
-  return string[0].toUpperCase() + string.slice(1);
 }
 
 function clearDepositElementsWhenClose() {

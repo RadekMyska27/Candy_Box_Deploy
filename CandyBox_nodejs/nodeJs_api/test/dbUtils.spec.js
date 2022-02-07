@@ -6,10 +6,11 @@ var expect = chai.expect; // Using Expect style
 var should = chai.should(); // Using Should style
 
 const credentials = require("./../client_secret.json");
-const {DbUtils} = require("../utils/dbUtils");
-const {TestMock} = require("./testMock");
-const {docSetup} = require("../db/docSetup");
-const {CandyErrors} = require("../constants/candyErrors");
+const { DbUtils } = require("../utils/dbUtils");
+const { TestMock } = require("./testMock");
+const { docSetup } = require("../db/docSetup");
+const { CandyErrors } = require("../constants/candyErrors");
+const { CandyConstants } = require("../constants/candyConstants");
 
 describe("DbUtils", function () {
   this.timeout(TestMock.timeOut);
@@ -17,6 +18,7 @@ describe("DbUtils", function () {
   let utils;
   let doc;
   let sheet;
+  let candyStoreSheet;
 
   beforeEach(async () => {
     utils = new DbUtils();
@@ -25,6 +27,7 @@ describe("DbUtils", function () {
     await doc.useServiceAccountAuth(credentials);
     await doc.loadInfo();
     sheet = doc.sheetsByTitle[TestMock.testUser];
+    candyStoreSheet = doc.sheetsByTitle[CandyConstants.candyStoreName];
     await sheet.loadCells();
   });
 
@@ -80,9 +83,82 @@ describe("DbUtils", function () {
       expect(result).not.null;
     });
   });
-  describe("getUserPurchasedItems", async function () {
-    it("getUserPurchasedItems", async function () {
-      let result = await utils.getUserPurchasedItems(doc, TestMock.testUser);
+  describe("getItemsAccordingUserName", async function () {
+    it("getItemsAccordingUserName", async function () {
+      let result = await utils.getItemsAccordingUserName(
+        doc,
+        TestMock.testUser
+      );
+      console.log(result);
+    });
+  });
+
+  describe("updateItemAmountAtStore", async function () {
+    it("updateItemAmountAtStore update actual amount", async function () {
+      let result = await utils.updateItemAtStore(
+        candyStoreSheet,
+        0,
+        -1,
+        null,
+        TestMock.candy_1.name
+      );
+      console.log(result);
+    });
+
+    it("updateItemAmountAtStore update without consumed", async function () {
+      let result = await utils.updateItemAtStore(
+        candyStoreSheet,
+        0,
+        100,
+        5,
+        100,
+        89,
+        TestMock.candy_1.name,
+        false
+      );
+      console.log(result);
+    });
+
+    it("updateItemAmountAtStore update and consumed", async function () {
+      let result = await utils.updateItemAtStore(
+        candyStoreSheet,
+        0,
+        -20,
+        null,
+        null,
+        null,
+        TestMock.candy_1.name,
+        true
+      );
+      console.log(result);
+    });
+  });
+
+  describe("decreaseItemAmountAtStore", async function () {
+    it("decreaseItemAmountAtStore", async function () {
+      let result = await utils.decreaseItemAmountAtStore(
+        candyStoreSheet,
+        0,
+        TestMock.candy_1.name
+      );
+      console.log(result);
+    });
+  });
+
+  describe("increaseItemAmountAtStore", async function () {
+    it("increaseItemAmountAtStore", async function () {
+      let result = await utils.increaseItemAmountAtStore(
+        candyStoreSheet,
+        0,
+        TestMock.candy_1.name
+      );
+      console.log(result);
+    });
+  });
+
+  describe("getListOfItemsOutOfStore", async function () {
+    it("getListOfItemsOutOfStore", async function () {
+      let result = await utils.getListOfItemsOutOfStore(doc);
       console.log(result);
     });
   });

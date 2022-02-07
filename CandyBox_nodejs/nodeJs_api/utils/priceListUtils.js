@@ -2,7 +2,6 @@
 
 const { DbUtils } = require("./dbUtils");
 const { CandyConstants } = require("../constants/candyConstants");
-const { getCandyPriceList } = require("../db/priceList");
 const { Candy } = require("../db/candy");
 const { Validations } = require("../validations/validations");
 
@@ -12,6 +11,13 @@ const validations = new Validations();
 class PriceListUtils {
   get className() {
     return this.constructor.name;
+  }
+
+  async getCandiesAtStore(doc) {
+    return await dbUtils.getItemsAccordingUserName(
+      doc,
+      CandyConstants.candyStoreName
+    );
   }
 
   async getFavoritesItems(doc, userName) {
@@ -45,13 +51,13 @@ class PriceListUtils {
       [...itemsByIdsCount.entries()].sort((a, b) => b[1] - a[1])
     );
 
-    let candies = getCandyPriceList();
+    let candies = await this.getCandiesAtStore(doc);
     let numberOfCandies = candies.length;
 
     let favoriteCandies = [];
     let iterator = 0;
 
-    itemsByIdsCountSorted.forEach((value, key, map) => {
+    itemsByIdsCountSorted.forEach((value, key) => {
       if (iterator < 5) {
         let favoriteCandy = candies.find((candy) => candy.id === key);
         if (favoriteCandy !== undefined) {
