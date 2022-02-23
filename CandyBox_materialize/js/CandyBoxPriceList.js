@@ -8,7 +8,7 @@ const candyType = {
 const shoppingList = document.getElementById("shopping_list");
 const depositQrButton = document.getElementById("add_deposit_qr");
 const paymentButtonMobile = document.getElementById("payment_btn_mobile");
-const userSelectButtonMobile = document.getElementById("users_btn_mobile");
+const userLogInButtonMobile = document.getElementById("users_btn_mobile");
 const userAccountButtonMobile = document.getElementById(
   "users_account_btn_mobile"
 );
@@ -31,6 +31,22 @@ const modalPrice = document.getElementById("modal_price");
 const userAccountPayBalance = document.getElementById("user_pay_balance");
 const schoppingContinueButton = document.getElementById("pay_continue");
 const redirectAdminPageButton = document.getElementById("redirect_adminPage");
+const userNameInputValue = document.getElementById("userName_value");
+const passwordInputValue = document.getElementById("password_value");
+const userLogInButton = document.getElementById("user_logIn_button");
+const logInConfirmButton = document.getElementById("logIn_confirm_button");
+const logInGeneralError = document.getElementById("logIn_general_error");
+const loaderLogIn = document.getElementById("loader_logIn");
+const userLogInCloseButton = document.getElementById("user_logIn_close");
+const newPasswordInputValue = document.getElementById("new_password_value");
+const userNewPasswordStatusLabel = document.getElementById(
+  "user_new_password_error"
+);
+const confirmNewPasswordButton = document.getElementById(
+  "confirm_new_password"
+);
+const loaderChangePassword = document.getElementById("loader_change_password");
+const balanceLoader = document.getElementById("loader_balance");
 
 let candyList = [];
 // let favoriteCandyList = [];
@@ -38,7 +54,11 @@ let userHistoryItems = [];
 let candiesToBuy = [];
 let users = [];
 let userName;
+let userPassword;
+let userId;
 let userBalance;
+let favoriteItems = [];
+
 const urlIp = "localhost";
 
 initPriceList().then((r) => console.log("Price list incited"));
@@ -134,8 +154,6 @@ function usersLoad() {
     .then((response) => response.json())
     .then((responseData) => {
       users = responseData;
-      users.forEach((i) => addUserToDropDown(i.id, i.name));
-      setUserSelectorListener();
     })
     .catch(function (error) {
       console.log(error);
@@ -143,6 +161,7 @@ function usersLoad() {
 }
 
 function userBalanceLoad() {
+  startBalanceLoader();
   const url = "http://" + urlIp + ":3000/api/clientBalanceQuery"; // http://localhost:3000/api/clientBalanceQuery
   fetch(url, {
     method: "POST",
@@ -155,9 +174,11 @@ function userBalanceLoad() {
   })
     .then(async (responseBalance) => {
       userBalance = await responseBalance.json();
+      stopBalanceLoader();
     })
     .catch(function (error) {
       console.log(error);
+      stopBalanceLoader();
     });
 }
 
@@ -210,7 +231,6 @@ function savePayment() {
         userBalance = response;
         updateUserBalance("pay");
       } else {
-        console.log(response);
       }
     })
     .catch(function (error) {
@@ -218,10 +238,106 @@ function savePayment() {
     });
 }
 
+function userLogIn() {
+  startLogInLoader();
+  const url = "http://" + urlIp + ":3000/api/logInRequest";
+  fetch(url, {
+    method: "POST",
+    headers: new Headers({
+      "content-type": "application/json",
+    }),
+    body: JSON.stringify({
+      userName: userNameInputValue.value.toLowerCase(),
+      password: passwordInputValue.value,
+    }),
+  })
+    .then(async (responseLogIn) => {
+      let response = await responseLogIn.json();
+
+      userName = response.name;
+      userPassword = response.passWord;
+      userId = response.id;
+      favoriteItems = response.favoriteItems;
+
+      userAccountButtonSetup();
+      hideLogInButton();
+      shouldBeAdminPageButtonVisible();
+
+      favoriteItems.forEach((favoriteCandyId) => {
+        tryMoveCandyToFavoriteItems(candyList, favoriteCandyId);
+      });
+
+      closeLogInModal();
+    })
+    .catch(function (error) {
+      displayLogInError(true);
+      console.error(error.message);
+
+      stopLogInLoader();
+    });
+}
+
+function changeUserPassword() {
+  startPasswordLoader();
+  const url = "http://" + urlIp + ":3000/api/changePasswordRequest";
+  fetch(url, {
+    method: "POST",
+    headers: new Headers({
+      "content-type": "application/json",
+    }),
+    body: JSON.stringify({
+      userName: userName,
+      password: newPasswordInputValue.value,
+    }),
+  })
+    .then(async (responsePasswordChanged) => {
+      let response = await responsePasswordChanged.json();
+
+      displayChangePasswordStatus(false);
+      stopPasswordLoader();
+    })
+    .catch(function (error) {
+      displayChangePasswordStatus(true);
+      console.error(error.message);
+      stopPasswordLoader();
+    });
+}
+
+function updateUsersFavoriteItems(candyToUpdateId, list) {
+  disableFavoriteButtons(list);
+  const url = "http://" + urlIp + ":3000/api/updateFavoriteItems";
+  fetch(url, {
+    method: "POST",
+    headers: new Headers({
+      "content-type": "application/json",
+    }),
+    body: JSON.stringify({
+      userId: userId,
+      userName: userName,
+      candyId: candyToUpdateId,
+    }),
+  })
+    .then(async (responseFavoriteItemsChanged) => {
+      let response = await responseFavoriteItemsChanged.json();
+
+      favoriteItems = response.favoriteItems;
+
+      favoriteItems.forEach((favoriteCandyId) => {
+        tryMoveCandyToFavoriteItems(candyList, favoriteCandyId);
+      });
+      enableFavoriteButtons(list);
+    })
+    .catch(function (error) {
+      enableFavoriteButtons(list);
+      console.error(error.message);
+    });
+}
+
 function priceListItemSettings(list) {
   setAddCandyListener(list);
   setDeleteCandyListener(list);
   setCandyImageEffectOnClick(list);
+  setFavoriteListener(list);
 }
 
 shoppingList?.addEventListener("click", function () {
@@ -235,6 +351,7 @@ userAccountButton?.addEventListener("click", function () {
 
 userAccountButtonMobile?.addEventListener("click", function () {
   setupUserAccountModal();
+  shouldBeAdminPageButtonVisible();
 });
 
 paymentButtonMobile?.addEventListener("click", function () {
@@ -284,13 +401,23 @@ depositQrButton?.addEventListener("click", function () {
   saveDeposit();
 });
 
-depositValueInput.addEventListener("input", function () {
+logInConfirmButton?.addEventListener("click", function () {
+  displayLogInError(false);
+  userLogIn();
+});
+
+depositValueInput?.addEventListener("input", function () {
   tryUpdateDisabledAttributeQrButton();
 });
 
-depositValueInput.addEventListener("focusin", function () {
+depositValueInput?.addEventListener("focusin", function () {
   enableDepositButtons();
   depositQrImage.src = "";
+});
+
+confirmNewPasswordButton?.addEventListener("click", function () {
+  hideChangePassWordStatus();
+  changeUserPassword();
 });
 
 function disableDepositButtons() {
@@ -326,8 +453,46 @@ function setDefaultPayModalElementsWhenClose() {
   }
 }
 
+function displayLogInError(isError) {
+  logInGeneralError.style.visibility = isError ? "visible" : "hidden";
+}
+
+function displayChangePasswordStatus(isError) {
+  userNewPasswordStatusLabel.innerHTML = isError
+    ? "Chyba, heslo musí mít min 2 a max 100 znaků"
+    : "Heslo bylo změněno";
+  userNewPasswordStatusLabel.style.color = isError ? "red" : "green";
+  userNewPasswordStatusLabel.style.visibility = "visible";
+}
+
+function hideChangePassWordStatus() {
+  if (userNewPasswordStatusLabel !== null) {
+    userNewPasswordStatusLabel.style.visibility = "hidden";
+  }
+}
+
+function startLogInLoader() {
+  loaderLogIn.style.visibility = "visible";
+}
+
+function stopLogInLoader() {
+  loaderLogIn.style.visibility = "hidden";
+}
+
+function startPasswordLoader() {
+  loaderChangePassword.style.visibility = "visible";
+}
+
+function stopPasswordLoader() {
+  loaderChangePassword.style.visibility = "hidden";
+}
+
 function setCandiesToBuy(candies) {
   candiesToBuy = candies;
+}
+
+function closeLogInModal() {
+  userLogInCloseButton.click();
 }
 
 function addCandieToBuy({ id, name, price, type }) {
@@ -366,9 +531,11 @@ function setPayElementsWhenPay() {
 }
 
 function startBalanceLoader() {
-  if (document.getElementById("loader_progress") !== null) {
-    document.getElementById("loader_progress").style.display;
-  }
+  balanceLoader.style.visibility = "visible";
+}
+
+function stopBalanceLoader() {
+  balanceLoader.style.visibility = "hidden";
 }
 
 function stopLoader() {
@@ -380,19 +547,13 @@ function stopLoader() {
   }
 }
 
-function stopBalanceLoader() {
-  if (document.getElementById("loader_progress") !== null) {
-    document.getElementById("loader_progress").style.display = "none";
-  }
-}
-
 function setElementsDefaultWhenSignOut() {
   userBalance = undefined;
   userName = "";
-  userSelectButton.innerHTML = "Uživatel";
-  userSelectButtonMobile.innerHTML = "Uživatel";
   userAccountButton.style.visibility = "hidden";
   userAccountButtonMobile.style.visibility = "hidden";
+  userLogInButton.style.visibility = "visible";
+
   shouldBeAdminPageButtonVisible();
 }
 
@@ -550,10 +711,8 @@ function setupUserAccountModalElements() {
   userNameAccount.innerHTML = "Uživatel: " + capitalizeFirstLetter(userName);
 
   if (userBalance === undefined) {
-    startBalanceLoader();
     let timerId = setInterval(() => {
       if (userBalance !== undefined) {
-        stopBalanceLoader();
         setDepositUserBalance();
       }
     }, 1000); // TODO to constant
@@ -631,5 +790,6 @@ function clearDepositElementsWhenClose() {
   userBalance = undefined;
   depositValueInput.value = undefined;
   depositQrImage.src = "";
+  userNewPasswordStatusLabel.style.visibility = "hidden";
   deleteUserHistory();
 }

@@ -1,14 +1,14 @@
 /* eslint-disable no-undef */
-const {CandyWithHistory} = require("../db/candy");
+const { CandyWithHistory } = require("../db/candy");
 const {
   ClientsAccountCacheUtils,
 } = require("../utils/clientsAccountCacheUtils");
-const {DbUtils} = require("../utils/dbUtils");
-const {LogUtils} = require("../utils/logUtils");
-const {CandyErrors} = require("../constants/candyErrors");
-const {CandyMessages} = require("../constants/candyMessages");
-const {Validations} = require("../validations/validations");
-const {Utils} = require("../utils/utils");
+const { DbUtils } = require("../utils/dbUtils");
+const { LogUtils } = require("../utils/logUtils");
+const { CandyErrors } = require("../constants/candyErrors");
+const { CandyMessages } = require("../constants/candyMessages");
+const { Validations } = require("../validations/validations");
+const { Utils } = require("../utils/utils");
 
 const utils = new Utils();
 const validations = new Validations();
@@ -20,10 +20,17 @@ class DepositRequestHandler {
     return this.constructor.name;
   }
 
-  enrich(deposit, actualUserBalance, doc, userName, userHistoryDictionary) {
+  enrich(
+    deposit,
+    actualUserBalance,
+    doc,
+    userName,
+    userHistoryDictionary,
+    usersNames
+  ) {
     let error = validations.processErrors(
       validations.docExist(doc),
-      validations.usernameExist(userName)
+      validations.usernameExist(userName, usersNames)
     );
     if (error !== undefined) {
       return error;

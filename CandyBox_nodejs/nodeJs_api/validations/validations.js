@@ -1,10 +1,7 @@
 /* eslint-disable no-undef */
 
 const { LogUtils } = require("../utils/logUtils");
-const { Users } = require("../db/users");
 const { CandyErrors } = require("../constants/candyErrors");
-
-const users = new Users();
 
 class Validations {
   get className() {
@@ -26,10 +23,14 @@ class Validations {
     }
   }
 
-  usernameExist(userName) {
-    if (users.users.every((user) => userName !== user.name)) {
+  usernameExist(userName, usersNames) {
+    if (usersNames.every((user) => userName !== user)) {
       return CandyErrors.userNameNotRecognized;
     }
+  }
+
+  isPasswordValid(requestPassword, storedPassWord) {
+    return requestPassword.toString() === storedPassWord.toString();
   }
 
   sheetExist(sheet, userName) {

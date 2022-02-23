@@ -2,13 +2,13 @@
 
 const { DbUtils } = require("./dbUtils");
 const { LogUtils } = require("./logUtils");
-const { Users } = require("../db/users");
 const {
   UserBalanceQueryHandler,
 } = require("../handlers/userBalanceQueryHandler");
+const { UsersAtDdUtils } = require("./usersAtDdUtils");
 
 const userBalanceQuery = new UserBalanceQueryHandler();
-const users = new Users();
+const users = new UsersAtDdUtils();
 const dbUtils = new DbUtils();
 
 class ClientsAccountCacheUtils {
@@ -16,47 +16,41 @@ class ClientsAccountCacheUtils {
     return this.constructor.name;
   }
 
-  loadUserBalance(doc, name) {
+  loadUserBalance(doc, userName) {
     return new Promise((resolve, reject) => {
-      let error = userBalanceQuery.validation(doc, name);
+      let error = undefined; //TODO try repair validations //userBalanceQuery.validation(doc, userName);
+
       if (error === undefined) {
-        resolve(userBalanceQuery.consume(doc, name));
+        resolve(userBalanceQuery.consume(doc, userName));
       } else {
         reject(error);
       }
     });
   }
 
-  updateUsersBalances(doc, balanceDictionary) {
-    let iterator = 0;
+  async updateUsersBalances(doc, balanceDictionary, userName) {
     return new Promise((resolve, reject) => {
-      users.users.forEach((i) => {
-        let userName = i.name;
-        this.loadUserBalance(doc, userName)
-          .then((response) => {
-            balanceDictionary.set(userName, response);
-            iterator++;
-            if (iterator === users.users.length) {
-              resolve(true);
-            }
-          })
-          .catch((error) => {
-            LogUtils.log(this.className, error);
-            reject(false);
-          });
-      });
+      this.loadUserBalance(doc, userName)
+        .then((response) => {
+          balanceDictionary.set(userName, response);
+          resolve(balanceDictionary);
+        })
+        .catch((error) => {
+          LogUtils.log(this.className, error);
+          reject(false);
+        });
     });
   }
 
-  getUsersBalances(doc) {
+  getUsersBalances(doc, usersNames) {
     let iterator = 0;
     return new Promise((resolve, reject) => {
-      users.users.forEach((i) => {
+      usersNames.forEach((i) => {
         let userName = i.name;
         this.loadUserBalance(doc, userName)
           .then(() => {
             iterator++;
-            if (iterator === users.users.length) {
+            if (iterator === usersNames.length) {
               resolve(true);
             }
           })
@@ -69,24 +63,22 @@ class ClientsAccountCacheUtils {
   }
 
   //TODO tests
-  initUserHistory(doc, userHistoryDictionary) {
+  async initUserHistory(doc, userHistoryDictionary, userName) {
     let userHistoryList = [];
 
     return new Promise((resolve, reject) => {
-      users.users.forEach((user) => {
-        let userName = user.name;
-        dbUtils
-          .getItemsAccordingUserName(doc, userName)
-          .then((items) => {
-            userHistoryList = items;
-            userHistoryDictionary.set(userName, userHistoryList);
-            resolve(true);
-          })
-          .catch((error) => {
-            LogUtils.log(this.className, error);
-            reject(false);
-          });
-      });
+      dbUtils
+        .getItemsAccordingUserName(doc, userName)
+        .then((items) => {
+          userHistoryList = items;
+          userHistoryDictionary.set(userName, userHistoryList);
+
+          resolve(userHistoryDictionary);
+        })
+        .catch((error) => {
+          LogUtils.log(this.className, error);
+          reject(false);
+        });
     });
   }
 

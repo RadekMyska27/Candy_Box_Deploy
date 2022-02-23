@@ -14,12 +14,13 @@ const { PriceListUtils } = require("./utils/priceListUtils");
 const { CandyMessages } = require("./constants/candyMessages");
 const { Utils } = require("./utils/utils");
 const { CandyErrors } = require("./constants/candyErrors");
-const { Users } = require("./db/users");
 const { docSetup } = require("./db/docSetup");
 const { LogUtils } = require("./utils/logUtils");
 const { ApiUtils } = require("./utils/apiUtils");
 
 const { ExpressSetup } = require("./utils/expressSetup");
+const { UsersAtDdUtils } = require("./utils/usersAtDdUtils");
+const { User } = require("./db/users");
 
 const paymentRequestHandler = new PaymentRequestHandler();
 const depositRequestHandler = new DepositRequestHandler();
@@ -29,9 +30,9 @@ const clientsAccountCache = new ClientsAccountCacheUtils();
 const expressSetup = new ExpressSetup();
 const apiUtils = new ApiUtils();
 const dbUtils = new DbUtils();
-const users = new Users();
 const utils = new Utils();
 const priceListUtils = new PriceListUtils();
+const usersUtils = new UsersAtDdUtils();
 
 const doc = docSetup.doc;
 const app = express();
@@ -40,37 +41,73 @@ const app = express();
 expressSetup.setUpNodeJsServer(app, express);
 //---------------
 
-//--Init database formulas
-dbUtils.setDbFormulas(doc);
-//TODO handle error
-//--------------
+//------------- init users
+
+let usersNames = [];
+let userHistoryDictionary = new Map();
+let balanceDictionary = new Map();
+
+usersUtils.usersNames(doc).then((response) => {
+  if (response.length !== 0) {
+    usersNames = response;
+  }
+
+  //--Init database formulas
+  dbUtils.setDbFormulas(doc, usersNames);
+  //TODO handle error
+
+  // for each user init history -> load users items from DB
+  // for each user update balance cache after last user candy box started -> log
+
+  let iterator = 0;
+
+  usersNames.forEach((userName) => {
+    setTimeout(
+      () => userHistoryInit(iterator, userName, usersNames),
+      CandyConstants.tenSecondToMilliseconds
+    );
+  });
+
+  //--------------
+});
+//------------
 
 //--INIT CACHE---//
-let userHistoryDictionary = new Map();
-clientsAccountCache.initUserHistory(doc, userHistoryDictionary).then((r) => {
-  if (r) {
+
+function userHistoryInit(iterator, userName, usersNames) {
+  iterator++;
+  clientsAccountCache
+    .initUserHistory(doc, userHistoryDictionary, userName)
+    .then((r) => {
+      if (r) {
+        LogUtils.log(
+          CandyConstants.nodeJsServerName,
+          CandyMessages.userHistoryInit + userName
+        );
+        usersBalanceInit(userName);
+      }
+    });
+  if (iterator === usersNames.length) {
     LogUtils.log(
       CandyConstants.nodeJsServerName,
-      CandyMessages.userHistoryInit
+      CandyMessages.candyBoxStarted
     );
   }
-});
+}
 
-let balanceDictionary = new Map();
-clientsAccountCache
-  .updateUsersBalances(doc, balanceDictionary)
-  .then((response) => {
-    //--CANDY BOX STARTED---//
-    response
-      ? LogUtils.log(
+function usersBalanceInit(userName) {
+  clientsAccountCache
+    .updateUsersBalances(doc, balanceDictionary, userName)
+    .then((balanceResponse) => {
+      //--CANDY BOX STARTED---//
+      if (balanceResponse) {
+        LogUtils.log(
           CandyConstants.nodeJsServerName,
-          CandyMessages.candyBoxStarted
-        )
-      : LogUtils.log(
-          CandyConstants.nodeJsServerName,
-          CandyMessages.candyBoxNotStarted
+          CandyMessages.userBalanceSuccessfullyUpdatedForUser + userName
         );
-  });
+      }
+    });
+}
 
 //-- Daily call users balance --//
 setInterval(
@@ -85,7 +122,7 @@ function callUsersBalance() {
     CandyMessages.dailyCallOfUsersBalanceStarted
   );
   clientsAccountCache
-    .getUsersBalances(doc)
+    .getUsersBalances(doc, usersNames)
     .then((response) =>
       response
         ? LogUtils.log(
@@ -121,6 +158,7 @@ app.post("/api/clientBalanceQuery", async (req, res) => {
       CandyConstants.nodeJsServerName,
       "clientBalanceQuery called userName: " + request.userName
     );
+
     res.send(JSON.stringify(balanceDictionary.get(request.userName)));
   }
 });
@@ -157,14 +195,18 @@ app.post("/api/depositRequest", async (req, res) => {
         " with  deposit " +
         request.deposit
     );
+
     let enrichResponse = depositRequestHandler.enrich(
       request.deposit,
       balanceDictionary.get(request.userName),
       doc,
       request.userName,
-      userHistoryDictionary
+      userHistoryDictionary,
+      usersNames
     );
+
     res.send(JSON.stringify(enrichResponse));
+
     await clientsAccountCache.softUpdateUserBalance(
       //TODO call in enrich new US
       request.userName,
@@ -251,12 +293,14 @@ app.post("/api/paymentRequest", async (req, res) => {
         " with candies " +
         LogUtils.getCandiesToLog(request.candies)
     );
+
     let enrichResponse = paymentRequestHandler.enrich(
       request.candies,
       balanceDictionary.get(request.userName),
       doc,
       request.userName,
-      userHistoryDictionary
+      userHistoryDictionary,
+      usersNames
     );
     res.send(JSON.stringify(enrichResponse));
 
@@ -328,10 +372,13 @@ app.post("/api/QrCodeQuery", (req, res) => {
   }
 });
 
-app.post("/api/users", (req, res) => {
+app.post("/api/users", async (req, res) => {
   //TODO make query?
   LogUtils.log(CandyConstants.nodeJsServerName, "users called ");
-  res.send(JSON.stringify(users.productionUsers));
+
+  const candyBoxUsers = await usersUtils.getUsers(doc);
+
+  res.send(JSON.stringify(candyBoxUsers));
 });
 
 app.post("/api/favoriteItems", async (req, res) => {
@@ -394,20 +441,32 @@ app.post("/api/updateItemsAtStore", async (req, res) => {
 
   //TODO request validation
 
+  let error = validations.requestValidation(
+    CandyConstants.nodeJsServerName,
+    validationSchemes.candyToUpdateSchema,
+    request
+  );
+
+  if (error !== undefined) {
+    res.status(400).send(apiUtils.serverNotAvailableResponse(error));
+  }
+
   LogUtils.log(CandyConstants.nodeJsServerName, "updateItemsAtStore called ");
 
-  //TODO handle request -> call dbUtils updateItemAtStore
-  //TODO make util for sheet validation
   const candyStoreSheet = await dbUtils.getSheetByUserName(
     doc,
     CandyConstants.candyStoreName
   );
-  let error = validations.sheetExist(
+  error = validations.sheetExist(
     candyStoreSheet,
     CandyConstants.candyStoreName
   );
 
   if (error !== undefined) {
+    LogUtils.log(
+      CandyConstants.nodeJsServerName,
+      CandyErrors.googleSheetError + error
+    );
     return error;
   }
 
@@ -423,4 +482,129 @@ app.post("/api/updateItemsAtStore", async (req, res) => {
   );
 
   res.send(JSON.stringify(updateItem));
+});
+
+app.post("/api/logInRequest", async (req, res) => {
+  const request = req.body;
+
+  //TODO request validation - min/max number of characters
+
+  const userName = request.userName;
+  const password = request.password;
+
+  LogUtils.log(
+    CandyConstants.nodeJsServerName,
+    "logInRequest called userName: " + userName
+  );
+
+  let error = validations.usernameExist(userName, usersNames);
+
+  if (error !== undefined) {
+    LogUtils.log(
+      CandyConstants.nodeJsServerName,
+      CandyErrors.userNameNotRecognized + userName
+    );
+    res.status(400).send(CandyErrors.userNameNotRecognized + userName);
+  }
+
+  const user = await usersUtils.getUserByName(doc, userName);
+
+  if (user === undefined) {
+    LogUtils.log(
+      CandyConstants.nodeJsServerName,
+      CandyErrors.userNameNotFindAtDb + userName
+    );
+    res.status(400).send(CandyErrors.userNameNotFindAtDb + userName);
+  } else {
+    let isLoginSuccess = validations.isPasswordValid(password, user.passWord);
+
+    isLoginSuccess
+      ? res.send(JSON.stringify(user))
+      : res.status(400).send(CandyErrors.notValidPassword + userName);
+
+    isLoginSuccess
+      ? LogUtils.log(
+          CandyConstants.nodeJsServerName,
+          CandyMessages.userLogIn(userName, password)
+        )
+      : LogUtils.log(
+          CandyConstants.nodeJsServerName,
+          CandyErrors.userNotLogIn(userName, password)
+        );
+  }
+});
+
+app.post("/api/changePasswordRequest", async (req, res) => {
+  const request = req.body;
+
+  const userName = request.userName;
+  const password = request.password;
+
+  LogUtils.log(
+    CandyConstants.nodeJsServerName,
+    "changePasswordRequest called userName: " + userName
+  );
+
+  let error = validations.requestValidation(
+    CandyConstants.nodeJsServerName,
+    validationSchemes.PasswordSchema,
+    request
+  );
+
+  let errorMessage = CandyErrors.enteredPasswordNotValid;
+
+  if (error === undefined) {
+    error = validations.usernameExist(userName, usersNames);
+    errorMessage = CandyErrors.userNameNotRecognized + userName;
+  }
+
+  if (error !== undefined) {
+    LogUtils.log(CandyConstants.nodeJsServerName, errorMessage);
+    res.status(400).send(errorMessage);
+  } else {
+    let passwordUpdateError = await usersUtils.changeUserPassword(
+      doc,
+      userName,
+      password
+    );
+
+    if (passwordUpdateError !== undefined) {
+      LogUtils.log(
+        CandyConstants.nodeJsServerName,
+        CandyErrors.userPasswordNotUpdated
+      );
+      res.status(400).send(CandyErrors.userPasswordNotUpdated);
+    } else {
+      // let user = usersUtils.getUserByName(doc, userName);
+      LogUtils.log(
+        CandyConstants.nodeJsServerName,
+        CandyMessages.userPasswordUpdated(userName)
+      );
+      res.send(JSON.stringify(CandyMessages.userPasswordUpdated(userName)));
+    }
+  }
+});
+
+app.post("/api/updateFavoriteItems", async (req, res) => {
+  const request = req.body;
+
+  const userId = request.userId;
+  const userName = request.userName;
+  const candyId = request.candyId;
+
+  LogUtils.log(
+    CandyConstants.nodeJsServerName,
+    "updateFavoriteItems called userName: " + userName
+  );
+
+  //TODO request validations
+
+  let userWithUpdatedFavorite = await usersUtils.updateUserFavoriteItem(
+    doc,
+    userId,
+    userName,
+    candyId
+  );
+
+  res.send(JSON.stringify(userWithUpdatedFavorite));
 });

@@ -57,6 +57,7 @@ describe("DbUtils", function () {
     });
   });
 
+  //TODO fix tests
   describe("setDbFormulas", function () {
     it("setDbFormulas_docUndefined_returnError", function () {
       let result = utils.setDbFormulas(undefined);

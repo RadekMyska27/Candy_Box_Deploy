@@ -12,11 +12,22 @@ function addPriceListItem(name, price, id, type) {
   const action = document.createElement("a");
   const cardAddButton = document.createElement("a");
   const cardDeleteButton = document.createElement("a");
+  const buttonsContainer = document.createElement("div");
+  const buttonsRowDiv = document.createElement("div");
+  const firstButtonColDiv = document.createElement("div");
+  const secondButtonsColDiv = document.createElement("div");
+
+  const cardFavoriteCheckBoxInput = document.createElement("input");
+  const cardFavoriteCheckBoxSpan = document.createElement("span");
+  const cardFavoriteCheckBoxLabel = document.createElement("label");
+  const cardFavoriteCheckBoxp = document.createElement("p");
+  const favoriteContainerDiv = document.createElement("div");
 
   // add tags to elements
   containerDiv.className = "container";
   rowDiv.className = "row";
   colDiv.className = "col s4";
+  colDiv.id = "candyCol_" + id.toString();
   cardDiv.className = "card";
   cardTitleSpan.className = "card-title center";
 
@@ -24,6 +35,7 @@ function addPriceListItem(name, price, id, type) {
   cardImageDiv.id = "candyImage_" + id.toString();
   // get image for candy from folder image
   cardImage.src = "image/" + name.toString() + ".jpg";
+
   cardActionDiv.className = "card-action";
   cardActionDiv.style.alignContent = "center";
 
@@ -40,6 +52,21 @@ function addPriceListItem(name, price, id, type) {
   cardDeleteButton.innerText = "Odebrat";
   cardDeleteButton.style.marginLeft = "5px";
 
+  buttonsContainer.className = "container center";
+  buttonsRowDiv.className = "row";
+  firstButtonColDiv.className = "col s6";
+  secondButtonsColDiv.className = "col s6";
+
+  cardFavoriteCheckBoxInput.type = "checkbox";
+  cardFavoriteCheckBoxInput.className = "filled-in";
+  cardFavoriteCheckBoxInput.id = "favorite_check_box_input_" + id.toString();
+
+  cardFavoriteCheckBoxSpan.innerText = "Oblibene";
+  cardFavoriteCheckBoxSpan.style.fontWeight = "bold";
+  cardFavoriteCheckBoxSpan.style.color = "black";
+
+  favoriteContainerDiv.className = "container center";
+
   // and give it some content
 
   const ContentName = document.createTextNode(name.replace("_", " ") + " ");
@@ -52,9 +79,18 @@ function addPriceListItem(name, price, id, type) {
   cardContentDiv.appendChild(ContentText);
 
   // card assembly from inner to outer elements
+  cardFavoriteCheckBoxLabel.append(cardFavoriteCheckBoxInput);
+  cardFavoriteCheckBoxLabel.append(cardFavoriteCheckBoxSpan);
+  cardFavoriteCheckBoxp.append(cardFavoriteCheckBoxLabel);
+  firstButtonColDiv.append(cardAddButton);
+  secondButtonsColDiv.append(cardDeleteButton);
+  favoriteContainerDiv.append(cardFavoriteCheckBoxp);
   cardImageDiv.append(cardImage);
-  cardActionDiv.append(cardAddButton);
-  cardActionDiv.append(cardDeleteButton);
+  buttonsRowDiv.append(firstButtonColDiv);
+  buttonsRowDiv.append(secondButtonsColDiv);
+  buttonsContainer.append(buttonsRowDiv);
+  cardActionDiv.append(buttonsContainer);
+  cardActionDiv.append(favoriteContainerDiv);
   cardDiv.append(cardImageDiv);
   cardDiv.append(cardTitleSpan);
   cardDiv.append(cardContentDiv);
@@ -77,11 +113,6 @@ function addPriceListItem(name, price, id, type) {
     case candyType.other:
       const rowTabOther = document?.getElementById("rowTab_other");
       rowTabOther.append(colDiv);
-      break;
-
-    case candyType.favorite:
-      const rowTabFavorite = document?.getElementById("rowTab_favorite");
-      rowTabFavorite.append(colDiv);
       break;
 
     default:

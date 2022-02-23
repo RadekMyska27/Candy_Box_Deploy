@@ -30,14 +30,24 @@ class CandyMessages {
     return "Listening at port number: " + port;
   }
 
+  static userLogIn(userName) {
+    return "user is Log-into candy box. UserName: " + userName;
+  }
+
+  static userPasswordUpdated(userName) {
+    return "user password was updated for user: " + userName;
+  }
+
   static candyBoxStarting = "CANDY BOX is starting please wait .....";
   static candyBoxStarted = "CANDY BOX STARTED :).";
   static candyBoxNotStarted = "CANDY BOX NOT STARTED :(.";
-  static userHistoryInit = "users history init";
+  static userHistoryInit = "users history init for user: ";
   static dailyCallOfUsersBalanceStarted = "Daily Call of users balance STARTED";
   static dailyCallOfUsersBalanceFINISHED =
     "Daily Call of users balance Successfully FINISHED";
   static dailyCallOfUsersBalanceFailed = "Daily Call of users balance FAILED";
+  static userBalanceSuccessfullyUpdatedForUser =
+    "user Balance successfully updated for user: ";
 }
 
 module.exports = {

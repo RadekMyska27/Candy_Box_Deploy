@@ -23,10 +23,17 @@ class PaymentRequestHandler {
     return this.constructor.name;
   }
 
-  enrich(candies, actualUserBalance, doc, userName, userHistoryDictionary) {
+  enrich(
+    candies,
+    actualUserBalance,
+    doc,
+    userName,
+    userHistoryDictionary,
+    usersNames
+  ) {
     let error = validations.processErrors(
       validations.docExist(doc),
-      validations.usernameExist(userName)
+      validations.usernameExist(userName, usersNames)
     );
 
     if (error !== undefined) {

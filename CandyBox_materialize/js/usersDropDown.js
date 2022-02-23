@@ -1,3 +1,4 @@
+//TODO remove it
 function addUserToDropDown(id, userName) {
   const userList = document.createElement("li");
   const userListMobile = document.createElement("li");

@@ -38,7 +38,7 @@ initAdminPage().then((r) => console.log("items at store incited"));
 async function initAdminPage() {
   loadItemsAtStore();
   // create header for table Items out of stock
-  createListOfItemsOutOfStock("NAME", "AMOUNT", "MIN AMOUNT");
+  createListOfItemsOutOfStock("NAME", "AMOUNT", "TO STORE");
   loadItemsOutOfStock();
   usersLoad();
 }
@@ -97,6 +97,7 @@ function userBalanceLoad(user) {
 }
 
 function loadItemsAtStore() {
+  startLoadOutOfStockLoader();
   const url = "http://" + urlIp + ":3000/api/queryItemsAtStore";
   fetch(url, {
     method: "POST",
@@ -116,14 +117,15 @@ function loadItemsAtStore() {
         )
       );
       setEditCandyListener(itemsAtStore);
+      stopLoadOutOfStockLoader();
     })
     .catch(function (error) {
       console.log(error);
+      stopLoadOutOfStockLoader();
     });
 }
 
 function loadItemsOutOfStock() {
-  startLoadOutOfStockLoader();
   const url = "http://" + urlIp + ":3000/api/queryItemsOutOfStock";
   fetch(url, {
     method: "POST",
@@ -133,12 +135,11 @@ function loadItemsOutOfStock() {
   })
     .then((response) => response.json())
     .then((responseData) => {
-      const itemsOutOfStock = responseData;
-      itemsOutOfStock.forEach((i) =>
+      responseData.forEach((i) =>
         createListOfItemsOutOfStock(
           capitalizeFirstLetter(i.name),
           i.actualAmount,
-          i.minAmount
+          i.maxAmount
         )
       );
       setEditCandyListener(itemsAtStore);
@@ -146,7 +147,6 @@ function loadItemsOutOfStock() {
     .catch(function (error) {
       console.log(error);
     });
-  stopLoadOutOfStockLoader();
 }
 
 function saveCandyChanges() {
@@ -192,6 +192,10 @@ saveCandyEditButton?.addEventListener("click", function () {
   startSaveEditChangesLoader();
   saveCandyChanges();
   clearedModalInputsValues();
+});
+
+closeCandyEditButton?.addEventListener("click", function () {
+  window.location.reload();
 });
 
 function setupStoreCandyEditModalElements() {

@@ -4,13 +4,11 @@ const { Validations } = require("../validations/validations");
 const credentials = require("./../client_secret.json");
 const { CandyWithHistory } = require("../db/candy");
 const { DbFormulas } = require("../db/dbFormulas");
-const { Users } = require("../db/users");
 const { LogUtils } = require("../utils/logUtils");
 const { CandyMessages } = require("../constants/candyMessages");
 const { Utils } = require("../utils/utils");
 const { CandyConstants } = require("../constants/candyConstants");
 
-const users = new Users();
 const validations = new Validations();
 const utils = new Utils();
 
@@ -45,16 +43,14 @@ class DbUtils {
     return rows.length + this.headerRow;
   }
 
-  setDbFormulas(doc) {
+  setDbFormulas(doc, usersNames) {
     let error = validations.processErrors(validations.docExist(doc));
 
     if (error !== undefined) {
       return error;
     }
 
-    users.users.forEach(async (user) => {
-      let userName = user.name;
-
+    usersNames.forEach(async (userName) => {
       try {
         const sheet = await this.getSheetByUserName(doc, userName);
         error = validations.sheetExist(sheet, userName);
@@ -72,9 +68,14 @@ class DbUtils {
   }
 
   async getSheetByUserName(doc, userName) {
-    await doc.useServiceAccountAuth(credentials);
-    await doc.loadInfo();
-    return doc.sheetsByTitle[userName];
+    try {
+      await doc.useServiceAccountAuth(credentials);
+      await doc.loadInfo();
+      return doc.sheetsByTitle[userName];
+    } catch (e) {
+      LogUtils.log(this.className, CandyErrors.googleSheetError + e);
+      return CandyErrors.googleSheetError + e;
+    }
   }
 
   //TODO Test
@@ -263,7 +264,7 @@ class DbUtils {
     let itemsOutOfStock = [];
 
     itemsAtStore.forEach((item) => {
-      if (item.actualAmount <= item.minAmount) {
+      if (this.isHalfOfTheRequiredAmount(item.actualAmount, item.maxAmount)) {
         itemsOutOfStock.push(item);
       }
     });
@@ -271,9 +272,14 @@ class DbUtils {
     return itemsOutOfStock;
   }
 
+  isHalfOfTheRequiredAmount(actualAmount, maxAmount) {
+    return actualAmount <= maxAmount / 2;
+  }
+
   //TODO Unit tests
   async getItemsAccordingUserName(doc, userName) {
     let purchasedItems = [];
+
     try {
       let sheet = await this.getSheetByUserName(doc, userName);
 
@@ -326,11 +332,7 @@ class DbUtils {
           purchasedDate !== null &&
           name !== null &&
           price !== null &&
-          type !== null &&
-          actualAmount !== null &&
-          minAmount !== null &&
-          maxAmount !== null &&
-          consumed !== null
+          type !== null
         ) {
           purchasedItems.push(
             new CandyWithHistory(

@@ -4,7 +4,9 @@ const { LogUtils } = require("../utils/logUtils");
 const { Validations } = require("../validations/validations");
 const { CandyMessages } = require("../constants/candyMessages");
 const { DbFormulas } = require("../db/dbFormulas");
+const { UsersAtDdUtils } = require("../utils/usersAtDdUtils");
 
+const usersUtils = new UsersAtDdUtils();
 const validations = new Validations();
 const dbUtils = new DbUtils();
 
@@ -13,11 +15,12 @@ class UserBalanceQueryHandler {
     return this.constructor.name;
   }
 
-  validation(doc, userName) {
-    let error = validations.processErrors(
-      validations.docExist(doc),
-      validations.usernameExist(userName)
-    );
+  async validation(doc) {
+    let error = validations
+      .processErrors
+      // validations.docExist(doc)
+      // validations.usernameExist(userName, await usersUtils.usersNames())
+      ();
 
     if (error !== undefined) {
       return error;

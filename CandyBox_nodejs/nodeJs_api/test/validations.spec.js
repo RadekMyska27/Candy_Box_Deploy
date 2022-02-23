@@ -12,6 +12,8 @@ const { CandyErrors } = require("../constants/candyErrors");
 const Joi = require("joi");
 const { TestMock } = require("./testMock");
 const { CandyConstants } = require("../constants/candyConstants");
+const { UsersAtDdUtils } = require("../utils/usersAtDdUtils");
+const usersUtils = new UsersAtDdUtils();
 
 describe("Validations", function () {
   this.timeout(TestMock.timeOut);
@@ -73,14 +75,16 @@ describe("Validations", function () {
     });
   });
 
-  describe("usernameExist", function () {
-    it("usernameExist_whenUserIsNotSetAtDb_ShouldReturnError", function () {
-      expect(validations.usernameExist("nonExist")).to.equal(
-        CandyErrors.userNameNotRecognized
-      );
+  describe("usernameExist", async function () {
+    it("usernameExist_whenUserIsNotSetAtDb_ShouldReturnError", async function () {
+      expect(
+        validations.usernameExist("nonExist", await usersUtils.usersNames())
+      ).to.equal(CandyErrors.userNameNotRecognized);
     });
-    it("usernameExist_whenUserIsAtDb_ShouldReturnUndefined", function () {
-      expect(validations.usernameExist("radek")).to.equal(undefined);
+    it("usernameExist_whenUserIsAtDb_ShouldReturnUndefined", async function () {
+      expect(
+        validations.usernameExist("radek", await usersUtils.usersNames())
+      ).to.equal(undefined);
     });
   });
 

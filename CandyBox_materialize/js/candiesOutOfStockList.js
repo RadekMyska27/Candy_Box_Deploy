@@ -1,7 +1,9 @@
 const rowItemsOutOfStock = document.getElementById("rowTab_items_outOfStock");
 
-function createListOfItemsOutOfStock(candyName, actualAmount, minAmount) {
-  let arrayRender = [candyName, actualAmount, minAmount];
+function createListOfItemsOutOfStock(candyName, actualAmount, maxAmount) {
+  let itemsToStore =
+    typeof maxAmount === "number" ? maxAmount - actualAmount : maxAmount;
+  let arrayRender = [candyName, actualAmount, itemsToStore];
 
   for (let i = 0; i < 3; i++) {
     // create a new div element

@@ -4,6 +4,7 @@ const Joi = require("joi");
 const { PriceListUtils } = require("../utils/priceListUtils");
 const { Users } = require("../db/users");
 const { CandyConstants } = require("../constants/candyConstants");
+const { CandyErrors } = require("../constants/candyErrors");
 
 const priceListUtils = new PriceListUtils();
 
@@ -13,7 +14,7 @@ class ValidationSchemes {
       userName: Joi.string()
         .min(1)
         .max(CandyConstants.maxMessageChars)
-        .valid(...getUsersNames())
+        // .valid(...getUsersNames()) // TODO validation for userName
         .required(),
     });
   }
@@ -41,7 +42,7 @@ class ValidationSchemes {
   get depositSchema() {
     return Joi.object({
       userName: Joi.string()
-        .valid(...getUsersNames())
+        // .valid(...getUsersNames()) //TODO user name validation
         .required(),
       deposit: Joi.number().min(1).max(CandyConstants.maxPayValue).required(),
     });
@@ -62,16 +63,44 @@ class ValidationSchemes {
       userName: Joi.string()
         .min(1)
         .max(CandyConstants.maxMessageChars)
-        .valid(...getUsersNames())
+        // .valid(...getUsersNames()) //TODO validate if users at DB contain userName from request
         .required(),
+    });
+  }
+
+  get candyToUpdateSchema() {
+    return Joi.object({
+      id: Joi.number().required(),
+      name: Joi.string().max(CandyConstants.maxMessageChars).allow(null, ""),
+      price: Joi.string().max(CandyConstants.maxMessageChars).allow(null, ""),
+      amountToAdd: Joi.string()
+        .max(CandyConstants.maxMessageChars)
+        .allow(null, ""),
+      minAmountValue: Joi.string()
+        .max(CandyConstants.maxMessageChars)
+        .allow(null, ""),
+      maxAmountValue: Joi.string()
+        .max(CandyConstants.maxMessageChars)
+        .allow(null, ""),
+    });
+  }
+
+  get PasswordSchema() {
+    return Joi.object({
+      userName: Joi.string().required(),
+      password: Joi.string()
+        .min(2)
+        .max(CandyConstants.maxMessageChars)
+        .required(),
+      // .message(CandyErrors.enteredPasswordNotValid),
     });
   }
 }
 
-function getUsersNames() {
-  const users = new Users();
-  return users.users.map((i) => i.name);
-}
+// function getUsersNames() {
+//   const users = new Users();
+//   return users.users.map((i) => i.name);
+// }
 
 async function getCandyNames(doc) {
   return await priceListUtils.getCandiesAtStore(doc).map((i) => i.name);

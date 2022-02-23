@@ -1,3 +1,4 @@
+//TODO remove it
 function setUserSelectorListener() {
   for (let i = 0; i < users.length; i++) {
     const selectUserItem = document.getElementById("user_" + i.toString());
@@ -26,11 +27,10 @@ function selectUserListener(selectUserItem) {
       return;
     }
 
-    userAccountButton.style.visibility = "visible";
     userAccountButtonMobile.style.visibility = "visible";
     userName = selectUserItem.value;
     userSelectButton.innerHTML = selectUserItem.value;
-    userSelectButtonMobile.innerHTML = selectUserItem.value;
+    // userSelectButtonMobile.innerHTML = selectUserItem.value;
 
     shouldBeAdminPageButtonVisible();
 
@@ -47,4 +47,17 @@ function shouldBeAdminPageButtonVisible() {
   } else {
     redirectAdminPageButton.style.visibility = "hidden";
   }
+}
+
+function userAccountButtonSetup() {
+  userAccountButton.style.visibility = "visible";
+  userAccountButton.innerHTML = "můj účet: " + userName;
+
+  userAccountButtonMobile.style.visibility = "visible";
+  userAccountButtonMobile.innerHTML = "můj účet: " + userName;
+}
+
+function hideLogInButton() {
+  userLogInButton.style.visibility = "hidden";
+  userLogInButtonMobile.style.visibility = "hidden";
 }
