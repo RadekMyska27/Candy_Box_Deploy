@@ -175,6 +175,7 @@ function userBalanceLoad() {
     .then(async (responseBalance) => {
       userBalance = await responseBalance.json();
       stopBalanceLoader();
+      isPayButtonDisabled();
     })
     .catch(function (error) {
       console.log(error);
@@ -420,6 +421,21 @@ confirmNewPasswordButton?.addEventListener("click", function () {
   changeUserPassword();
 });
 
+userNameInputValue.addEventListener("keypress", function (event) {
+  ClearErrorAndCallLogInRequest(event);
+});
+
+passwordInputValue.addEventListener("keypress", function (event) {
+  ClearErrorAndCallLogInRequest(event);
+});
+
+function ClearErrorAndCallLogInRequest(event) {
+  if (event.code === "Enter" || event.code === "NumpadEnter") {
+    displayLogInError(false);
+    userLogIn();
+  }
+}
+
 function disableDepositButtons() {
   depositCashButton.setAttribute("disabled", "disabled");
   depositQrButton.setAttribute("disabled", "disabled");
@@ -528,6 +544,16 @@ function setPayElementsWhenPay() {
   paymentDoneButton.removeAttribute("disabled");
   payQrImage.src = "";
   schoppingContinueButton.setAttribute("disabled", "disabled");
+}
+
+function isPayButtonDisabled() {
+  if (!isUserBalanceValid()) {
+    userPayButton.setAttribute("disabled", "disabled");
+  }
+}
+
+function isUserBalanceValid() {
+  return userBalance >= getPriceToPay();
 }
 
 function startBalanceLoader() {
@@ -687,14 +713,14 @@ function setupPaymentModalElements() {
   if (userBalance === undefined) {
     let timer = setInterval(() => {
       if (userBalance !== undefined) {
-        setPayUserBalance();
+        setPayUserBalance(false);
       }
     }, 1000); // TODO to constant
     setTimeout(() => {
       clearInterval(timer);
     }, 10000); // TODO to constant
   } else {
-    setPayUserBalance();
+    setPayUserBalance(false);
   }
 
   if (getPriceToPay() === 0) {
@@ -729,9 +755,15 @@ function setDepositUserBalance() {
   userAccountBalance.innerHTML = "Zustatek: " + userBalance + ",-";
 }
 
-function setPayUserBalance() {
+function setPayUserBalance(isAfterPay) {
   setBalanceLabelColorAndFontDefault(userAccountPayBalance);
-  userAccountPayBalance.innerHTML = "Zustatek: " + userBalance + ",-";
+  if (isUserBalanceValid() || isAfterPay) {
+    userAccountPayBalance.innerHTML = "Zustatek: " + userBalance + ",-";
+  } else {
+    userAccountPayBalance.style.color = "red";
+    userAccountPayBalance.innerHTML =
+      "NENI DOST KREDITU NA NAKUP! ZUSTATEK: " + userBalance + ",-";
+  }
 }
 
 function updateUserBalance(targetModal) {
@@ -762,7 +794,7 @@ function updatePayUserBalance() {
     "Zustatek: - " + getPriceToPay() + " = " + userBalance + ",-";
   setTimeout(function () {
     setBalanceLabelColorAndFontDefault(userAccountPayBalance);
-    setPayUserBalance();
+    setPayUserBalance(true);
   }, 3000);
 }
 
