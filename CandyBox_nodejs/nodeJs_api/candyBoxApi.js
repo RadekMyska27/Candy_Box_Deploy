@@ -20,7 +20,6 @@ const { ApiUtils } = require("./utils/apiUtils");
 
 const { ExpressSetup } = require("./utils/expressSetup");
 const { UsersAtDdUtils } = require("./utils/usersAtDdUtils");
-const { User } = require("./db/users");
 
 const paymentRequestHandler = new PaymentRequestHandler();
 const depositRequestHandler = new DepositRequestHandler();
@@ -61,10 +60,10 @@ usersUtils.usersNames(doc).then((response) => {
 
   let iterator = 0;
 
-  usersNames.forEach((userName) => {
+  usersNames.forEach((userName, index) => {
     setTimeout(
       () => userHistoryInit(iterator, userName, usersNames),
-      CandyConstants.tenSecondToMilliseconds
+      index * CandyConstants.tenSecondToMilliseconds
     );
   });
 
@@ -121,13 +120,15 @@ function callUsersBalance() {
     CandyConstants.nodeJsServerName,
     CandyMessages.dailyCallOfUsersBalanceStarted
   );
+  let actualUsersNames = usersNames;
   clientsAccountCache
-    .getUsersBalances(doc, usersNames)
-    .then((response) =>
-      response
-        ? LogUtils.log(
-            CandyConstants.nodeJsServerName,
-            CandyMessages.dailyCallOfUsersBalanceFINISHED
+    .getUsersBalances(doc, actualUsersNames)
+    .then(async (response) =>
+      response.length > 0
+        ? await clientsAccountCache.setUsersDebt(
+            depositRequestHandler,
+            doc,
+            response
           )
         : LogUtils.log(
             CandyConstants.nodeJsServerName,
