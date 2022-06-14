@@ -188,3 +188,20 @@ function getNameLabel(candyLabel) {
 function capitalizeFirstLetter(string) {
   return string[0].toUpperCase() + string.slice(1);
 }
+
+function isMobile() {
+  let check = false;
+  const ua = navigator.userAgent;
+  (function (a) {
+    if (
+        /Mobile|iP(hone|od)|Android|BlackBerry|IEMobile|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(
+            ua
+        )
+    ) {
+      check = true;
+    }
+
+  })(navigator.userAgent || navigator.vendor);
+  return check;
+}
+
