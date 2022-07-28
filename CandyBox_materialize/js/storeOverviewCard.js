@@ -1,59 +1,70 @@
 function addItemAtStoreToTable(name, price, id, actualAmount) {
-  // create a new div element
+    // create a new div element
 
-  const cardActionDiv = document.createElement("div");
-  const cardEditButton = document.createElement("a");
-  const cardAmountAtStoreLableDiv = document.createElement("div");
-  const cardDiv = document.createElement("div");
-  const cardTitleSpan = document.createElement("div");
-  const colDiv = document.createElement("div");
-  const rowDiv = document.createElement("div");
+    const cardActionDiv = document.createElement("div");
+    const cardEditButton = document.createElement("a");
+    const cardAmountAtStoreLableDiv = document.createElement("div");
+    const cardDiv = document.createElement("div");
+    const cardTitleSpan = document.createElement("div");
+    const colDiv = document.createElement("div");
+    const rowDiv = document.createElement("div");
 
-  // add tags to elements
-  cardTitleSpan.className = "card-title center";
-  colDiv.className = "col s3";
-  rowDiv.className = "row";
+    // add tags to elements
+    cardTitleSpan.className = "card-title center";
 
-  cardDiv.className = "card";
-  cardDiv.style.alignContent = "center";
+    if (isMobile()) {
+        colDiv.className = "col s12";
+    } else {
+        colDiv.className = "col s3";
+    }
 
-  cardActionDiv.className = "card-action";
-  cardActionDiv.style.alignContent = "center";
+    rowDiv.className = "row";
 
-  cardAmountAtStoreLableDiv.id = "amountLabel_" + id.toString();
-  cardAmountAtStoreLableDiv.className = "card-content center";
-  cardAmountAtStoreLableDiv.style.fontWeight = "bold";
+    cardDiv.className = "card";
+    cardDiv.style.alignContent = "center";
 
-  cardEditButton.id = "edit_" + id.toString();
-  cardEditButton.className =
-    "modal-trigger waves-effect waves-light btn-small light-green darken-4";
-  cardEditButton.innerText = "Detail / Edit";
-  cardEditButton.style.marginLeft = "10px";
-  cardEditButton.href = "#modal1";
+    cardActionDiv.className = "card-action";
+    cardActionDiv.style.alignContent = "center";
 
-  // and give it some content
+    cardAmountAtStoreLableDiv.id = "amountLabel_" + id.toString();
+    cardAmountAtStoreLableDiv.className = "card-content center";
+    cardAmountAtStoreLableDiv.style.fontWeight = "bold";
 
-  const ContentName = document.createTextNode(name.replace("_", " ") + " ");
-  const ContentText = document.createTextNode(
-    "At store: " + actualAmount + " piece"
-  );
+    cardEditButton.id = "edit_" + id.toString();
+    cardEditButton.className =
+        "modal-trigger waves-effect waves-light btn-small light-green darken-4";
+    cardEditButton.innerText = "Detail / Edit";
 
-  // add the text node to the newly created div
+    if (isMobile()) {
+        cardEditButton.style.marginLeft = "30px";
+    } else {
+        cardEditButton.style.marginLeft = "10px";
+    }
+    cardEditButton.href = "#modal1";
 
-  cardTitleSpan.appendChild(ContentName);
-  cardAmountAtStoreLableDiv.appendChild(ContentText);
+    // and give it some content
 
-  // card assembly from inner to outer elements
+    const ContentName = document.createTextNode(name.replace("_", " ") + " ");
+    const ContentText = document.createTextNode(
+        "At store: " + actualAmount + " piece"
+    );
 
-  cardActionDiv.append(cardEditButton);
-  cardDiv.append(cardTitleSpan);
-  cardDiv.append(cardAmountAtStoreLableDiv);
-  cardDiv.append(cardActionDiv);
-  colDiv.append(cardDiv);
-  rowDiv.append(colDiv);
+    // add the text node to the newly created div
 
-  // add item to Collapsibles section
+    cardTitleSpan.appendChild(ContentName);
+    cardAmountAtStoreLableDiv.appendChild(ContentText);
 
-  const rowTabStore = document?.getElementById("rowTab_store");
-  rowTabStore.append(colDiv);
+    // card assembly from inner to outer elements
+
+    cardActionDiv.append(cardEditButton);
+    cardDiv.append(cardTitleSpan);
+    cardDiv.append(cardAmountAtStoreLableDiv);
+    cardDiv.append(cardActionDiv);
+    colDiv.append(cardDiv);
+    rowDiv.append(colDiv);
+
+    // add item to Collapsibles section
+
+    const rowTabStore = document?.getElementById("rowTab_store");
+    rowTabStore.append(colDiv);
 }
