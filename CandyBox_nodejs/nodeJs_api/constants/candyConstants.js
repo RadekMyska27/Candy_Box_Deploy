@@ -34,6 +34,7 @@ class CandyConstants {
     "1wkCtjK0iwjlgkr-UaXuVtG1EySjxS0XDad9cuF2HohY";
 
   static candyStoreName = "candy_store";
+  static candyStatisticsName = "sales_statistics";
   static usersSheet = "users";
 
   static qrCodeLog(amount, message) {

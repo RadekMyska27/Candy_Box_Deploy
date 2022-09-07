@@ -33,7 +33,7 @@
         </div>
         <!-- Collapsibles  -->
         <ul id="collapsible_block" class="collapsible">
-            <li class="active">
+            <li>
                 <div class="collapsible-header"><i class="material-icons">store</i>Candies at store</div>
                 <div class="collapsible-body">
                     <div class="container">
@@ -140,6 +140,35 @@
             </div>
         </div>
     </div>
+
+    <div class="container">
+        <form class="col s12">
+            <div class="row">
+                <div class="input-field  col s3">
+                    <h5 id="chart_filter_year">Year: </h5>
+                    <input placeholder="Set Year" id="year_filter" type="number">
+                </div>
+                <div class="input-field  col s3">
+                    <h5 id="chart_filter_month">Month: </h5>
+                    <input placeholder="Set Month" id="month_filter" type="number">
+                </div>
+                <div class="col s3 valign-wrapper">
+                    <div id="chart_filter_button" class="waves-effect waves-light btn">Confirm</div>
+                </div>
+
+                <div class="col s3 valign-wrapper">
+                    <h5 id="chart_filter_balance" class="flow-text">Balance</h5>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <div class="container" id="chartContainer">
+        <canvas id="chart"></canvas>
+    </div>
+
+
 </main>
 
 
@@ -157,6 +186,10 @@
 <script src="js/materialize.js"></script>
 <script src="js/init.js"></script>
 <script src="js/candyBoxAdmin.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<script src="js/statisticsChart.js"></script>
 
 </body>
 </html>
