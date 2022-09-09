@@ -20,6 +20,7 @@ const {ApiUtils} = require("./utils/apiUtils");
 
 const {ExpressSetup} = require("./utils/expressSetup");
 const {UsersAtDdUtils} = require("./utils/usersAtDdUtils");
+const {UpgradeScripts} = require("./utils/upgradeScriptUtils");
 
 const paymentRequestHandler = new PaymentRequestHandler();
 const depositRequestHandler = new DepositRequestHandler();
@@ -32,6 +33,7 @@ const dbUtils = new DbUtils();
 const utils = new Utils();
 const priceListUtils = new PriceListUtils();
 const usersUtils = new UsersAtDdUtils();
+const upgradeScripts = new UpgradeScripts();
 
 const doc = docSetup.doc;
 const app = express();
@@ -622,4 +624,18 @@ app.post("/api/querySalesStatistic", async (req, res) => {
     );
 
     res.send(JSON.stringify(await dbUtils.getConsumedCandiesAtDays(doc, request.month, request.year)));
+});
+
+app.post("/api/performUpgradeRequest", async (req, res) => {
+    // volano jako asynchroni metoda viz async(req, res)
+    // const request = req.body;
+
+    LogUtils.log(
+        CandyConstants.nodeJsServerName,
+        "performUpgradeRequest called"
+    );
+    await upgradeScripts.updateStatistic(doc, userHistoryDictionary, usersNames)
+        ? res.send(JSON.stringify("statistic update finished"))
+        : res.status(400).send("statistic update failed");
+
 });

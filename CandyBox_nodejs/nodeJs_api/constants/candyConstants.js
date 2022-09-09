@@ -9,6 +9,7 @@ class CandyConstants {
     drinks: "drinks",
     other: "other",
     favorite: "favorite",
+    deposit: "deposit"
   };
 
   static variableSymbol = utils.getVariableSymbol();
@@ -27,6 +28,7 @@ class CandyConstants {
 
   static twentyFourHoursToMilliseconds = 86400000;
   static tenSecondToMilliseconds = 10000;
+  static minSecondToMilliseconds = 1000;
 
   static productionGoogleSpreadsheet =
     "1CfGPxISyKun9z3qV303FUrPiDD8DkWc6wgkM0L9tbG0";

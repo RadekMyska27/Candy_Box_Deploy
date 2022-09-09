@@ -8,7 +8,8 @@ const { LogUtils } = require("../utils/logUtils");
 const { CandyErrors } = require("../constants/candyErrors");
 const { CandyMessages } = require("../constants/candyMessages");
 const { Validations } = require("../validations/validations");
-const { Utils } = require("../utils/utils");
+const {Utils} = require("../utils/utils");
+const {CandyConstants} = require("../constants/candyConstants");
 
 const utils = new Utils();
 const validations = new Validations();
@@ -39,11 +40,11 @@ class DepositRequestHandler {
     clientsAccountCacheUtils.updateUserHistory(
       userName,
       new CandyWithHistory(
-        null,
-        "deposit",
-        deposit,
-        "N/A",
-        utils.getActualDate()
+          null,
+          CandyConstants.candyType.deposit,
+          deposit,
+          "N/A",
+          utils.getActualDate()
       ),
       userHistoryDictionary
     );
